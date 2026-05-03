@@ -392,12 +392,12 @@ export default function Home() {
           height={29}
         />
         <a
-          href="mailto:contact@regulusgroup.eu"
+          href="mailto:contact@regulus.eu"
           className="text-xs text-[#4a6a4c] hover:text-[#8aac8c] transition-colors"
         >
-          contact@regulusgroup.eu
+          contact@regulus.eu
         </a>
-        <p className="text-[11px] text-[#3f4e40]">© 2026 Regulus Group</p>
+        <p className="text-[11px] text-[#3f4e40]">© 2026 Regulus</p>
       </footer>
     </div>
   );

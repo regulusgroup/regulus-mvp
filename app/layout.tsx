@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title: "Regulus — AI Compliance for EU Fintechs",
     description:
       "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on.",
-    siteName: "Regulus Group",
+    siteName: "Regulus",
     type: "website",
   },
   twitter: {
