@@ -14,25 +14,23 @@
   --font-sans: var(--font-geist-sans);
   --font-display: "MomoTrust", serif;
 
-  /* Brand greens */
-  --color-green-dark:    #3f4e40;
-  --color-green-mid:     #5a7a5c;
-  --color-green-light:   #8aac8c;
-  --color-green-subtle:  #c8ddc9;
+  /* Brand colors */
+  --color-primary:   #b5b99f;
+  --color-secondary: #3f4e40;
 
   /* Backgrounds */
-  --color-bg-base:   #141f14;
-  --color-bg-card:   #1e2e1f;
-  --color-border:    #2e402f;
+  --color-bg-base:   #1a1f18;
+  --color-bg-card:   #222720;
+  --color-border:    #2e3329;
 
   /* Text */
-  --color-text-primary:  #e8f0e8;
-  --color-text-muted:    #7a9a7c;
+  --color-text-primary:  #b5b99f;
+  --color-text-muted:    #7a7f6a;
 }
 
 :root {
-  --background: #141f14;
-  --foreground: #e8f0e8;
+  --background: #1a1f18;
+  --foreground: #b5b99f;
 }
 
 body {

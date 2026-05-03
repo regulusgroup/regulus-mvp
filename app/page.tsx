@@ -85,13 +85,13 @@ function WaitlistForm() {
   if (status === "success") {
     return (
       <div className="flex flex-col items-center gap-4 text-center py-8">
-        <div className="w-14 h-14 rounded-full border border-[#5a7a5c]/40 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full border border-[#3f4e40]/40 flex items-center justify-center">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M5 13l4 4L19 7" stroke="#8aac8c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M5 13l4 4L19 7" stroke="#b5b99f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <p className="text-[#e8f0e8] font-medium">You&apos;re on the list.</p>
-        <p className="text-sm text-[#7a9a7c] max-w-xs leading-relaxed">
+        <p className="text-[#b5b99f] font-medium">You&apos;re on the list.</p>
+        <p className="text-sm text-[#7a7f6a] max-w-xs leading-relaxed">
           We&apos;ll reach out personally when we open early access — no mass emails.
         </p>
       </div>
@@ -106,22 +106,22 @@ function WaitlistForm() {
         placeholder="your@email.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="h-12 px-4 rounded-lg border border-[#2e402f] bg-[#1e2e1f] text-[#e8f0e8] placeholder:text-[#4a6a4c] text-sm outline-none focus:border-[#5a7a5c] transition-colors"
+        className="h-12 px-4 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
       />
       <select
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="h-12 px-4 rounded-lg border border-[#2e402f] bg-[#1e2e1f] text-sm outline-none focus:border-[#5a7a5c] transition-colors appearance-none cursor-pointer"
-        style={{ color: role ? "#e8f0e8" : "#4a6a4c" }}
+        className="h-12 px-4 rounded-lg border border-[#2e3329] bg-[#222720] text-sm outline-none focus:border-[#3f4e40] transition-colors appearance-none cursor-pointer"
+        style={{ color: role ? "#b5b99f" : "#4a4f3e" }}
       >
         <option value="" disabled>Your role (optional)</option>
         {ROLES.map((r) => (
-          <option key={r} value={r} style={{ color: "#e8f0e8", background: "#1e2e1f" }}>{r}</option>
+          <option key={r} value={r} style={{ color: "#b5b99f", background: "#222720" }}>{r}</option>
         ))}
       </select>
 
       {status === "duplicate" && (
-        <p className="text-xs text-[#7a9a7c] text-center">You&apos;re already on the list.</p>
+        <p className="text-xs text-[#7a7f6a] text-center">You&apos;re already on the list.</p>
       )}
       {status === "error" && (
         <p className="text-xs text-red-400 text-center">{errorMsg}</p>
@@ -130,12 +130,12 @@ function WaitlistForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="h-12 rounded-lg bg-[#3f4e40] text-[#e8f0e8] font-medium text-sm transition-all hover:bg-[#5a7a5c] disabled:opacity-50 cursor-pointer border border-[#5a7a5c]/30"
+        className="h-12 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:bg-[#3f4e40] disabled:opacity-50 cursor-pointer border border-[#3f4e40]/30"
       >
         {status === "loading" ? "Joining…" : "Join the waitlist"}
       </button>
 
-      <p className="text-xs text-[#4a6a4c] text-center">
+      <p className="text-xs text-[#4a4f3e] text-center">
         No spam. We&apos;ll reach out when it matters.
       </p>
     </form>
@@ -152,12 +152,12 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#141f14] text-[#e8f0e8]">
+    <div className="flex flex-col min-h-screen bg-[#1a1f18] text-[#b5b99f]">
 
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-[#2e402f]">
+      <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-[#2e3329]">
         <Image
-          src="/logos/logo-white.svg"
+          src="/logos/logo-green.svg"
           alt="Regulus"
           width={120}
           height={43}
@@ -165,7 +165,7 @@ export default function Home() {
         />
         <button
           onClick={scrollToWaitlist}
-          className="h-8 px-4 rounded-lg border border-[#3f4e40] text-xs text-[#8aac8c] hover:border-[#5a7a5c] hover:text-[#e8f0e8] transition-colors cursor-pointer"
+          className="h-8 px-4 rounded-lg border border-[#3f4e40] text-xs text-[#b5b99f] hover:border-[#3f4e40] hover:text-[#b5b99f] transition-colors cursor-pointer"
         >
           Join waitlist
         </button>
@@ -175,85 +175,85 @@ export default function Home() {
       <section className="flex flex-col items-center justify-center px-6 pt-24 pb-32 text-center">
         <div className="flex flex-col items-center gap-8 max-w-2xl">
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#3f4e40]/60 bg-[#1e2e1f]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8aac8c]" />
-            <span className="text-[11px] text-[#7a9a7c] uppercase tracking-widest">Early access — joining waitlist now</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#3f4e40]/60 bg-[#222720]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#b5b99f]" />
+            <span className="text-[11px] text-[#7a7f6a] uppercase tracking-widest">Early access — joining waitlist now</span>
           </div>
 
           <h1
-            className="text-5xl md:text-7xl leading-[1.05] tracking-tight text-[#e8f0e8]"
+            className="text-5xl md:text-7xl leading-[1.05] tracking-tight text-[#b5b99f]"
             style={{ fontFamily: "MomoTrust, serif" }}
           >
             EU fintech compliance,{" "}
-            <span className="text-[#5a7a5c]">finally under control.</span>
+            <span className="text-[#3f4e40]">finally under control.</span>
           </h1>
 
-          <p className="text-base md:text-lg text-[#7a9a7c] max-w-lg leading-relaxed">
+          <p className="text-base md:text-lg text-[#7a7f6a] max-w-lg leading-relaxed">
             MiCA. PSD2. DORA. GDPR. AML. One AI dashboard tracks every regulation that applies to your business — so you can stop worrying and start building.
           </p>
 
           <button
             onClick={scrollToWaitlist}
-            className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#e8f0e8] font-medium text-sm transition-all hover:bg-[#5a7a5c] cursor-pointer border border-[#5a7a5c]/40"
+            className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:bg-[#3f4e40] cursor-pointer border border-[#3f4e40]/40"
           >
             Request early access
           </button>
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e402f]" />
+      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
       {/* Problem */}
       <section className="flex flex-col items-center px-6 py-24">
         <div className="flex flex-col items-center gap-16 max-w-4xl w-full">
           <div className="flex flex-col items-center gap-3 text-center">
-            <p className="text-[11px] text-[#5a7a5c] uppercase tracking-widest">The problem</p>
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">The problem</p>
             <h2
-              className="text-3xl md:text-4xl text-[#e8f0e8]"
+              className="text-3xl md:text-4xl text-[#b5b99f]"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
               Compliance is killing European fintechs.
             </h2>
-            <p className="text-[#7a9a7c] max-w-md leading-relaxed text-sm">
+            <p className="text-[#7a7f6a] max-w-md leading-relaxed text-sm">
               Not because founders don&apos;t care — but because the regulatory surface is fragmented, expensive, and constantly moving.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#2e402f] rounded-xl overflow-hidden w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#2e3329] rounded-xl overflow-hidden w-full">
             {[
               { stat: "73%", label: "of EU fintechs fail partly due to compliance failures" },
               { stat: "5+",  label: "Excel files to track obligations across frameworks" },
               { stat: "50+", label: "pages of regulatory reading required per week" },
               { stat: "€50K", label: "per year spent on compliance consultants on average" },
             ].map(({ stat, label }) => (
-              <div key={stat} className="bg-[#141f14] flex flex-col items-center gap-2 px-6 py-8 text-center">
+              <div key={stat} className="bg-[#1a1f18] flex flex-col items-center gap-2 px-6 py-8 text-center">
                 <span
-                  className="text-3xl md:text-4xl text-[#8aac8c]"
+                  className="text-3xl md:text-4xl text-[#b5b99f]"
                   style={{ fontFamily: "MomoTrust, serif" }}
                 >
                   {stat}
                 </span>
-                <span className="text-xs text-[#7a9a7c] leading-relaxed max-w-[120px]">{label}</span>
+                <span className="text-xs text-[#7a7f6a] leading-relaxed max-w-[120px]">{label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e402f]" />
+      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
       {/* Solution */}
       <section className="flex flex-col items-center px-6 py-24">
         <div className="flex flex-col items-center gap-16 max-w-4xl w-full">
           <div className="flex flex-col items-center gap-3 text-center">
-            <p className="text-[11px] text-[#5a7a5c] uppercase tracking-widest">The solution</p>
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">The solution</p>
             <h2
-              className="text-3xl md:text-4xl text-[#e8f0e8]"
+              className="text-3xl md:text-4xl text-[#b5b99f]"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
               One dashboard. All EU regulations.
             </h2>
-            <p className="text-[#7a9a7c] max-w-md leading-relaxed text-sm">
+            <p className="text-[#7a7f6a] max-w-md leading-relaxed text-sm">
               Regulus reads the regulations, maps them to your business, and tells you exactly what to do next — no consultants required.
             </p>
           </div>
@@ -281,11 +281,11 @@ export default function Home() {
                 description: "One-click export of your compliance status for audits, investor due diligence, or regulatory filings.",
               },
             ].map(({ icon, title, description }) => (
-              <div key={title} className="rounded-xl border border-[#2e402f] bg-[#1e2e1f] p-6 flex flex-col gap-4">
-                <div className="text-[#5a7a5c]">{icon}</div>
+              <div key={title} className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
+                <div className="text-[#3f4e40]">{icon}</div>
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-base font-medium text-[#e8f0e8]">{title}</h3>
-                  <p className="text-sm text-[#7a9a7c] leading-relaxed">{description}</p>
+                  <h3 className="text-base font-medium text-[#b5b99f]">{title}</h3>
+                  <p className="text-sm text-[#7a7f6a] leading-relaxed">{description}</p>
                 </div>
               </div>
             ))}
@@ -293,15 +293,15 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e402f]" />
+      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
       {/* Who it's for */}
       <section className="flex flex-col items-center px-6 py-24">
         <div className="flex flex-col items-center gap-16 max-w-4xl w-full">
           <div className="flex flex-col items-center gap-3 text-center">
-            <p className="text-[11px] text-[#5a7a5c] uppercase tracking-widest">Who it&apos;s for</p>
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Who it&apos;s for</p>
             <h2
-              className="text-3xl md:text-4xl text-[#e8f0e8]"
+              className="text-3xl md:text-4xl text-[#b5b99f]"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
               Built for the people compliance falls on.
@@ -323,31 +323,31 @@ export default function Home() {
                 description: "Stop maintaining spreadsheets. Get a single source of truth for your entire regulatory stack across all EU frameworks.",
               },
             ].map(({ title, description }) => (
-              <div key={title} className="rounded-xl border border-[#2e402f] bg-[#1e2e1f] p-6 flex flex-col gap-3">
+              <div key={title} className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-3">
                 <div className="w-1 h-6 rounded-full bg-[#3f4e40]" />
-                <h3 className="text-base font-medium text-[#e8f0e8]">{title}</h3>
-                <p className="text-sm text-[#7a9a7c] leading-relaxed">{description}</p>
+                <h3 className="text-base font-medium text-[#b5b99f]">{title}</h3>
+                <p className="text-sm text-[#7a7f6a] leading-relaxed">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e402f]" />
+      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
       {/* Why EU */}
       <section className="flex flex-col items-center px-6 py-24">
         <div className="flex flex-col md:flex-row items-start gap-12 max-w-4xl w-full">
           <div className="flex flex-col gap-4 flex-1">
-            <p className="text-[11px] text-[#5a7a5c] uppercase tracking-widest">Why EU only</p>
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Why EU only</p>
             <h2
-              className="text-3xl md:text-4xl text-[#e8f0e8] leading-tight"
+              className="text-3xl md:text-4xl text-[#b5b99f] leading-tight"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
               The complexity<br />is the moat.
             </h2>
           </div>
-          <div className="flex flex-col gap-5 flex-1 text-sm text-[#7a9a7c] leading-relaxed">
+          <div className="flex flex-col gap-5 flex-1 text-sm text-[#7a7f6a] leading-relaxed">
             <p>
               Europe doesn&apos;t have one regulatory framework for fintech — it has dozens, layered across the EU and each member state. MiCA for crypto. PSD2 for payments. DORA for operational resilience. GDPR for data. AML for financial crime.
             </p>
@@ -361,20 +361,20 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e402f]" />
+      <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
       {/* Waitlist */}
       <section ref={waitlistRef} className="flex flex-col items-center px-6 py-32">
         <div className="flex flex-col items-center gap-10 max-w-lg w-full text-center">
           <div className="flex flex-col gap-4">
-            <p className="text-[11px] text-[#5a7a5c] uppercase tracking-widest">Early access</p>
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Early access</p>
             <h2
-              className="text-4xl md:text-5xl text-[#e8f0e8] leading-tight"
+              className="text-4xl md:text-5xl text-[#b5b99f] leading-tight"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
               Get in early.<br />Help shape what we build.
             </h2>
-            <p className="text-[#7a9a7c] text-sm leading-relaxed">
+            <p className="text-[#7a7f6a] text-sm leading-relaxed">
               We&apos;re onboarding a small group of design partners — fintech founders, compliance leads, and investors who want to influence the roadmap and get first access.
             </p>
           </div>
@@ -384,16 +384,16 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-8 border-t border-[#2e402f] gap-4 mt-auto">
+      <footer className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-8 border-t border-[#2e3329] gap-4 mt-auto">
         <Image
-          src="/logos/logo-white.svg"
+          src="/logos/logo-green.svg"
           alt="Regulus"
           width={80}
           height={29}
         />
         <a
           href="mailto:contact@regulus.eu"
-          className="text-xs text-[#4a6a4c] hover:text-[#8aac8c] transition-colors"
+          className="text-xs text-[#4a4f3e] hover:text-[#b5b99f] transition-colors"
         >
           contact@regulus.eu
         </a>
