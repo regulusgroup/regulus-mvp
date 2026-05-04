@@ -134,16 +134,14 @@ function Chip({
 
 function Skeleton() {
   return (
-    <div className="flex flex-col gap-4 w-full max-w-2xl animate-pulse">
-      <div className="h-6 w-2/3 rounded bg-[#222720]" />
-      <div className="h-4 w-full rounded bg-[#222720]" />
-      <div className="h-4 w-5/6 rounded bg-[#222720]" />
-      <div className="h-px bg-[#2e3329] my-2" />
-      {[1,2,3].map(i => (
-        <div key={i} className="rounded-xl border border-[#2e3329] p-5 flex flex-col gap-3">
-          <div className="h-4 w-1/4 rounded bg-[#222720]" />
-          <div className="h-3 w-full rounded bg-[#222720]" />
-          <div className="h-3 w-4/5 rounded bg-[#222720]" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-5xl animate-pulse">
+      {[1,2,3,4].map(i => (
+        <div key={i} className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
+          <div className="h-3 w-1/3 rounded bg-[#2e3329]" />
+          <div className="h-5 w-2/3 rounded bg-[#2e3329]" />
+          <div className="h-3 w-full rounded bg-[#2e3329]" />
+          <div className="h-3 w-5/6 rounded bg-[#2e3329]" />
+          <div className="h-3 w-4/5 rounded bg-[#2e3329]" />
         </div>
       ))}
     </div>
@@ -169,160 +167,157 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
   }
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl">
+    <div className="flex flex-col gap-6 w-full max-w-5xl">
 
-      {/* Header */}
-      <div className="flex flex-col gap-3">
+      {/* Page title */}
+      <div className="flex items-center justify-between">
         <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Your compliance snapshot</p>
-        <div className="flex items-center gap-4">
+        <button onClick={onEdit} className="text-xs text-[#4a4f3e] hover:text-[#7a7f6a] transition-colors cursor-pointer">
+          ← Start over
+        </button>
+      </div>
+
+      {/* 2×2 grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+
+        {/* Box 1 — Overview */}
+        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-5">
+          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Overview</p>
+
+          {/* Risk badge */}
           <div
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border"
-            style={{ borderColor: riskColor + "40", background: riskColor + "10" }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border w-fit"
+            style={{ borderColor: riskColor + "40", background: riskColor + "12" }}
           >
             <div className="w-2 h-2 rounded-full" style={{ background: riskColor }} />
             <span className="text-sm font-medium" style={{ color: riskColor }}>
               {report.riskLevel} risk — {report.riskScore}/10
             </span>
           </div>
-        </div>
-        <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
-      </div>
 
-      <div className="h-px bg-[#2e3329]" />
+          <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
 
-      {/* Regulations */}
-      <div className="flex flex-col gap-3">
-        <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Regulations</p>
-        {report.regulations?.map((reg) => {
-          const p = PRIORITY_STYLES[reg.priority] ?? PRIORITY_STYLES.na;
-          return (
-            <div
-              key={reg.name}
-              className="rounded-xl border p-5 flex flex-col gap-3"
-              style={{
-                borderColor: reg.applies ? "#3f4e40" : "#2e3329",
-                background:  reg.applies ? "#222720" : "transparent",
-                opacity:     reg.applies ? 1 : 0.4,
-              }}
-            >
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded"
-                    style={{ background: "#3f4e40", color: "#b5b99f" }}
-                  >
-                    {reg.name}
-                  </span>
-                  <span className="text-xs text-[#7a7f6a]">{reg.fullName}</span>
-                </div>
-                {reg.applies && (
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded-full border"
-                    style={{ borderColor: p.color + "50", color: p.color, background: p.bg }}
-                  >
-                    {p.label}
-                  </span>
-                )}
-              </div>
-              {reg.applies && (
-                <>
-                  <p className="text-xs text-[#7a7f6a] leading-relaxed">{reg.reason}</p>
-                  <div className="flex gap-2 items-start border-t border-[#2e3329] pt-3">
-                    <span className="text-[10px] text-[#3f4e40] uppercase tracking-widest mt-0.5 shrink-0">Action</span>
-                    <p className="text-xs text-[#b5b99f] leading-relaxed">{reg.action}</p>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Tech stack flags */}
-      {report.techStackFlags?.length > 0 && (
-        <>
-          <div className="h-px bg-[#2e3329]" />
-          <div className="flex flex-col gap-3">
-            <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Your tech stack — compliance flags</p>
-            {report.techStackFlags.map((f, i) => (
-              <div key={i} className="rounded-lg border border-[#2e3329] bg-[#222720] px-4 py-3 flex gap-3 items-start">
-                <span className="text-xs font-medium text-[#b5b99f] shrink-0 mt-0.5">{f.tool}</span>
-                <span className="text-xs text-[#7a7f6a] leading-relaxed">{f.flag}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* 30-day plan */}
-      {report.thirtyDayPlan?.length > 0 && (
-        <>
-          <div className="h-px bg-[#2e3329]" />
-          <div className="flex flex-col gap-3">
-            <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Your 30-day action plan</p>
-            {report.thirtyDayPlan.map((action, i) => (
-              <div key={i} className="flex gap-3 items-start">
-                <span
-                  className="w-5 h-5 rounded-full border border-[#3f4e40] flex items-center justify-center text-[10px] text-[#3f4e40] shrink-0 mt-0.5"
-                >
-                  {i + 1}
-                </span>
-                <p className="text-sm text-[#b5b99f] leading-relaxed">{action}</p>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Cost & timeline */}
-      {(report.costRange || report.timelineToLaunch) && (
-        <>
-          <div className="h-px bg-[#2e3329]" />
-          <div className="grid grid-cols-2 gap-4">
+          {/* Cost + timeline */}
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#2e3329]">
             {report.costRange && (
-              <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-1">
-                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Est. compliance cost</p>
-                <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+              <div className="flex flex-col gap-1">
+                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Est. cost</p>
+                <p className="text-base font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
                   {report.costRange}
                 </p>
               </div>
             )}
             {report.timelineToLaunch && (
-              <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-1">
-                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Timeline to launch</p>
-                <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+              <div className="flex flex-col gap-1">
+                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Timeline</p>
+                <p className="text-base font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
                   {report.timelineToLaunch}
                 </p>
               </div>
             )}
           </div>
-        </>
-      )}
+        </div>
 
-      {/* Email capture */}
-      <div className="rounded-xl border border-[#3f4e40]/40 bg-[#222720] p-6 flex flex-col gap-4 text-center">
-        {emailStatus === "done" || emailStatus === "duplicate" ? (
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-sm font-medium text-[#b5b99f]">
-              {emailStatus === "done" ? "You're on the list." : "You're already on the list."}
-            </p>
-            <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
+        {/* Box 2 — Regulations */}
+        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
+          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Regulations</p>
+          <div className="flex flex-col gap-3">
+            {report.regulations?.map((reg) => {
+              const p = PRIORITY_STYLES[reg.priority] ?? PRIORITY_STYLES.na;
+              return (
+                <div
+                  key={reg.name}
+                  className="rounded-lg border p-4 flex flex-col gap-2"
+                  style={{
+                    borderColor: reg.applies ? "#3f4e40" : "#2e3329",
+                    background:  reg.applies ? "#1a1f18" : "transparent",
+                    opacity:     reg.applies ? 1 : 0.35,
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ background: "#3f4e40", color: "#b5b99f" }}>
+                        {reg.name}
+                      </span>
+                      <span className="text-[11px] text-[#7a7f6a]">{reg.fullName}</span>
+                    </div>
+                    {reg.applies && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full border" style={{ borderColor: p.color + "50", color: p.color, background: p.bg }}>
+                        {p.label}
+                      </span>
+                    )}
+                  </div>
+                  {reg.applies && (
+                    <>
+                      <p className="text-xs text-[#7a7f6a] leading-relaxed">{reg.reason}</p>
+                      <div className="flex gap-2 items-start border-t border-[#2e3329] pt-2">
+                        <span className="text-[10px] text-[#3f4e40] uppercase tracking-widest mt-0.5 shrink-0">Action</span>
+                        <p className="text-xs text-[#b5b99f] leading-relaxed">{reg.action}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ) : (
-          <>
-            <p className="text-sm font-medium text-[#b5b99f]">Get the full dashboard — free early access</p>
-            <p className="text-xs text-[#7a7f6a] leading-relaxed">
-              Regulus tracks all of this automatically and updates when regulations change.
-            </p>
-            <form onSubmit={submitEmail} className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                required
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
-              />
+        </div>
+
+        {/* Box 3 — Tech stack flags */}
+        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
+          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Tech stack — compliance flags</p>
+          {report.techStackFlags?.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {report.techStackFlags.map((f, i) => (
+                <div key={i} className="rounded-lg border border-[#2e3329] bg-[#1a1f18] px-4 py-3 flex gap-3 items-start">
+                  <span className="text-xs font-medium text-[#b5b99f] shrink-0 mt-0.5 min-w-[60px]">{f.tool}</span>
+                  <span className="text-xs text-[#7a7f6a] leading-relaxed">{f.flag}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-[#4a4f3e]">No specific flags for your tech stack.</p>
+          )}
+        </div>
+
+        {/* Box 4 — 30-day plan + email */}
+        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-5">
+          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Your 30-day action plan</p>
+          {report.thirtyDayPlan?.length > 0 && (
+            <div className="flex flex-col gap-3">
+              {report.thirtyDayPlan.map((action, i) => (
+                <div key={i} className="flex gap-3 items-start">
+                  <span className="w-5 h-5 rounded-full border border-[#3f4e40] flex items-center justify-center text-[10px] text-[#3f4e40] shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm text-[#b5b99f] leading-relaxed">{action}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Email capture */}
+          <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3">
+            {emailStatus === "done" || emailStatus === "duplicate" ? (
+              <div className="flex flex-col gap-1">
+                <p className="text-sm font-medium text-[#b5b99f]">
+                  {emailStatus === "done" ? "You're on the list." : "Already on the list."}
+                </p>
+                <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-[#7a7f6a] leading-relaxed">
+                  Get the full dashboard — tracks all of this automatically as regulations change.
+                </p>
+                <form onSubmit={submitEmail} className="flex flex-col gap-2">
+                  <input
+                    type="email"
+                    required
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
+                  />
               <button
                 type="submit"
                 disabled={emailStatus === "loading"}
@@ -333,14 +328,10 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
             </form>
           </>
         )}
-      </div>
+          </div>
+        </div>
 
-      <button
-        onClick={onEdit}
-        className="text-xs text-[#4a4f3e] hover:text-[#7a7f6a] transition-colors cursor-pointer"
-      >
-        ← Start over
-      </button>
+      </div>{/* end 2×2 grid */}
     </div>
   );
 }
