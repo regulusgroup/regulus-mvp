@@ -7,11 +7,18 @@ import Link from "next/link";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BUSINESS_TYPES = [
-  { id: "payments",  label: "Payments App",    desc: "Wallets, transfers, payment processing" },
-  { id: "crypto",    label: "Crypto & DeFi",   desc: "Exchanges, custody, yield, tokenisation" },
-  { id: "lending",   label: "Lending & Credit", desc: "BNPL, loans, credit scoring" },
-  { id: "neobank",   label: "Neobank",          desc: "Digital accounts, cards, banking" },
-  { id: "insurance", label: "Insurtech",        desc: "Digital insurance products & distribution" },
+  { id: "payments",    label: "Payments App",        desc: "Wallets, transfers, payment processing" },
+  { id: "crypto",      label: "Crypto & DeFi",       desc: "Exchanges, custody, yield, tokenisation" },
+  { id: "lending",     label: "Lending & Credit",    desc: "BNPL, loans, credit scoring" },
+  { id: "neobank",     label: "Neobank",             desc: "Digital accounts, cards, banking" },
+  { id: "insurance",   label: "Insurtech",           desc: "Digital insurance products & distribution" },
+  { id: "wealthtech",  label: "Wealthtech",          desc: "Robo-advisors, investing, trading platforms" },
+  { id: "openbanking", label: "Open Banking",        desc: "Account aggregation, PFM, data APIs" },
+  { id: "b2bfinance",  label: "B2B Finance",         desc: "Corporate payments, treasury, FX, expense mgmt" },
+  { id: "embedded",    label: "Embedded Finance",    desc: "BaaS, white-label financial products" },
+  { id: "regtech",     label: "Regtech",             desc: "Compliance tools, regulatory reporting, AML" },
+  { id: "proptech",    label: "PropTech Finance",    desc: "Mortgage, property investment, real estate fintech" },
+  { id: "payroll",     label: "Payroll & HR Finance", desc: "Salary, benefits, expense management" },
 ];
 
 const TECH_STACK = {
@@ -502,7 +509,7 @@ export default function ScanPage() {
 
             <div className="flex flex-col gap-3 w-full">
               <label className="text-xs text-[#7a7f6a] uppercase tracking-widest">Business type</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {BUSINESS_TYPES.map(({ id, label, desc }) => (
                   <button
                     key={id}
