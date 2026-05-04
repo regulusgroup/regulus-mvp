@@ -151,9 +151,13 @@ function Skeleton() {
 // ─── Report renderer ──────────────────────────────────────────────────────────
 
 function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) {
+  const [slide, setSlide] = useState(0);
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "duplicate">("idle");
   const riskColor = RISK_COLOR[report.riskLevel] ?? "#b5b99f";
+
+  const slides = ["Overview", "Regulations", "Tech Stack", "Action Plan", "Summary"];
+  const total = slides.length;
 
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -166,62 +170,78 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
     setEmailStatus(res.status === 409 ? "duplicate" : "done");
   }
 
-  return (
-    <div className="flex flex-col gap-6 w-full max-w-5xl">
+  // derive 3 key takeaways from the report
+  const keyTakeaways = [
+    report.thirtyDayPlan?.[0],
+    report.regulations?.find(r => r.applies && r.priority === "urgent")?.action,
+    report.techStackFlags?.[0]?.flag,
+  ].filter(Boolean).slice(0, 3) as string[];
 
-      {/* Page title */}
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Your compliance snapshot</p>
-        <button onClick={onEdit} className="text-xs text-[#4a4f3e] hover:text-[#7a7f6a] transition-colors cursor-pointer">
-          ← Start over
-        </button>
+  return (
+    <div className="flex flex-col items-center gap-6 w-full max-w-2xl">
+
+      {/* Step dots */}
+      <div className="flex items-center gap-2">
+        {slides.map((s, i) => (
+          <button
+            key={s}
+            onClick={() => setSlide(i)}
+            className="transition-all cursor-pointer"
+            title={s}
+          >
+            <div
+              className="rounded-full transition-all"
+              style={{
+                width:  slide === i ? 20 : 6,
+                height: 6,
+                background: slide === i ? "#3f4e40" : "#2e3329",
+              }}
+            />
+          </button>
+        ))}
       </div>
 
-      {/* 2×2 grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      {/* Card */}
+      <div className="w-full rounded-xl border border-[#2e3329] bg-[#222720] p-8 flex flex-col gap-6 min-h-[420px]">
 
-        {/* Box 1 — Overview */}
-        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-5">
-          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Overview</p>
+        {/* Label */}
+        <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">
+          {slide + 1} / {total} — {slides[slide]}
+        </p>
 
-          {/* Risk badge */}
-          <div
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border w-fit"
-            style={{ borderColor: riskColor + "40", background: riskColor + "12" }}
-          >
-            <div className="w-2 h-2 rounded-full" style={{ background: riskColor }} />
-            <span className="text-sm font-medium" style={{ color: riskColor }}>
-              {report.riskLevel} risk — {report.riskScore}/10
-            </span>
+        {/* ── Slide 0: Overview ── */}
+        {slide === 0 && (
+          <div className="flex flex-col gap-5 flex-1">
+            <div
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border w-fit"
+              style={{ borderColor: riskColor + "40", background: riskColor + "12" }}
+            >
+              <div className="w-2 h-2 rounded-full" style={{ background: riskColor }} />
+              <span className="text-sm font-medium" style={{ color: riskColor }}>
+                {report.riskLevel} risk — {report.riskScore}/10
+              </span>
+            </div>
+            <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#2e3329] mt-auto">
+              {report.costRange && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Est. cost</p>
+                  <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>{report.costRange}</p>
+                </div>
+              )}
+              {report.timelineToLaunch && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Timeline</p>
+                  <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>{report.timelineToLaunch}</p>
+                </div>
+              )}
+            </div>
           </div>
+        )}
 
-          <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
-
-          {/* Cost + timeline */}
-          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#2e3329]">
-            {report.costRange && (
-              <div className="flex flex-col gap-1">
-                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Est. cost</p>
-                <p className="text-base font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
-                  {report.costRange}
-                </p>
-              </div>
-            )}
-            {report.timelineToLaunch && (
-              <div className="flex flex-col gap-1">
-                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Timeline</p>
-                <p className="text-base font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
-                  {report.timelineToLaunch}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Box 2 — Regulations */}
-        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
-          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Regulations</p>
-          <div className="flex flex-col gap-3">
+        {/* ── Slide 1: Regulations ── */}
+        {slide === 1 && (
+          <div className="flex flex-col gap-3 flex-1">
             {report.regulations?.map((reg) => {
               const p = PRIORITY_STYLES[reg.priority] ?? PRIORITY_STYLES.na;
               return (
@@ -260,78 +280,117 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
               );
             })}
           </div>
-        </div>
+        )}
 
-        {/* Box 3 — Tech stack flags */}
-        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-4">
-          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Tech stack — compliance flags</p>
-          {report.techStackFlags?.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              {report.techStackFlags.map((f, i) => (
-                <div key={i} className="rounded-lg border border-[#2e3329] bg-[#1a1f18] px-4 py-3 flex gap-3 items-start">
-                  <span className="text-xs font-medium text-[#b5b99f] shrink-0 mt-0.5 min-w-[60px]">{f.tool}</span>
+        {/* ── Slide 2: Tech stack ── */}
+        {slide === 2 && (
+          <div className="flex flex-col gap-3 flex-1">
+            {report.techStackFlags?.length > 0 ? (
+              report.techStackFlags.map((f, i) => (
+                <div key={i} className="rounded-lg border border-[#2e3329] bg-[#1a1f18] px-4 py-4 flex flex-col gap-2">
+                  <span className="text-xs font-semibold text-[#b5b99f]">{f.tool}</span>
                   <span className="text-xs text-[#7a7f6a] leading-relaxed">{f.flag}</span>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-[#4a4f3e]">No specific flags for your tech stack.</p>
-          )}
-        </div>
+              ))
+            ) : (
+              <p className="text-sm text-[#4a4f3e]">No specific compliance flags for your tech stack.</p>
+            )}
+          </div>
+        )}
 
-        {/* Box 4 — 30-day plan + email */}
-        <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-5">
-          <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Your 30-day action plan</p>
-          {report.thirtyDayPlan?.length > 0 && (
-            <div className="flex flex-col gap-3">
-              {report.thirtyDayPlan.map((action, i) => (
-                <div key={i} className="flex gap-3 items-start">
-                  <span className="w-5 h-5 rounded-full border border-[#3f4e40] flex items-center justify-center text-[10px] text-[#3f4e40] shrink-0 mt-0.5">
+        {/* ── Slide 3: 30-day plan ── */}
+        {slide === 3 && (
+          <div className="flex flex-col gap-4 flex-1">
+            {report.thirtyDayPlan?.map((action, i) => (
+              <div key={i} className="flex gap-4 items-start">
+                <span className="w-7 h-7 rounded-full border border-[#3f4e40] flex items-center justify-center text-xs text-[#3f4e40] shrink-0 mt-0.5">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-[#b5b99f] leading-relaxed">{action}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Slide 4: Summary + email ── */}
+        {slide === 4 && (
+          <div className="flex flex-col gap-6 flex-1">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-xl text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+                3 things to act on now.
+              </h2>
+              {keyTakeaways.map((t, i) => (
+                <div key={i} className="flex gap-3 items-start rounded-lg border border-[#2e3329] bg-[#1a1f18] p-4">
+                  <span className="w-5 h-5 rounded-full bg-[#3f4e40] flex items-center justify-center text-[10px] text-[#b5b99f] shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-sm text-[#b5b99f] leading-relaxed">{action}</p>
+                  <p className="text-sm text-[#b5b99f] leading-relaxed">{t}</p>
                 </div>
               ))}
             </div>
-          )}
 
-          {/* Email capture */}
-          <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3">
-            {emailStatus === "done" || emailStatus === "duplicate" ? (
-              <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium text-[#b5b99f]">
-                  {emailStatus === "done" ? "You're on the list." : "Already on the list."}
-                </p>
-                <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
-              </div>
-            ) : (
-              <>
-                <p className="text-xs text-[#7a7f6a] leading-relaxed">
-                  Get the full dashboard — tracks all of this automatically as regulations change.
-                </p>
-                <form onSubmit={submitEmail} className="flex flex-col gap-2">
-                  <input
-                    type="email"
-                    required
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
-                  />
-              <button
-                type="submit"
-                disabled={emailStatus === "loading"}
-                className="h-10 px-5 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer shrink-0"
-              >
-                {emailStatus === "loading" ? "Saving…" : "Get full access"}
-              </button>
-            </form>
-          </>
-        )}
+            <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3 mt-auto">
+              {emailStatus === "done" || emailStatus === "duplicate" ? (
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium text-[#b5b99f]">
+                    {emailStatus === "done" ? "You're on the list." : "Already on the list."}
+                  </p>
+                  <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-[#7a7f6a]">Get the full dashboard — tracks all of this as regulations change.</p>
+                  <form onSubmit={submitEmail} className="flex gap-2">
+                    <input
+                      type="email"
+                      required
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="flex-1 h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={emailStatus === "loading"}
+                      className="h-10 px-5 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer shrink-0"
+                    >
+                      {emailStatus === "loading" ? "…" : "Get access"}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-      </div>{/* end 2×2 grid */}
+      </div>
+
+      {/* Nav arrows */}
+      <div className="flex items-center justify-between w-full">
+        <button
+          onClick={() => setSlide(s => Math.max(0, s - 1))}
+          disabled={slide === 0}
+          className="flex items-center gap-2 h-10 px-5 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] disabled:opacity-20 transition-all cursor-pointer"
+        >
+          ← Previous
+        </button>
+
+        <button
+          onClick={onEdit}
+          className="text-xs text-[#3f4e40] hover:text-[#7a7f6a] transition-colors cursor-pointer"
+        >
+          Start over
+        </button>
+
+        <button
+          onClick={() => setSlide(s => Math.min(total - 1, s + 1))}
+          disabled={slide === total - 1}
+          className="flex items-center gap-2 h-10 px-5 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] disabled:opacity-20 transition-all cursor-pointer"
+        >
+          Next →
+        </button>
+      </div>
+
     </div>
   );
 }
