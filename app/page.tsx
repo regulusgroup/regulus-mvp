@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -192,12 +193,20 @@ export default function Home() {
             MiCA. PSD2. DORA. GDPR. AML. One AI dashboard tracks every regulation that applies to your business — so you can stop worrying and start building.
           </p>
 
-          <button
-            onClick={scrollToWaitlist}
-            className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:bg-[#3f4e40] cursor-pointer border border-[#3f4e40]/40"
-          >
-            Request early access
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/scan"
+              className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:opacity-90 flex items-center border border-[#3f4e40]"
+            >
+              Scan my compliance risk →
+            </Link>
+            <button
+              onClick={scrollToWaitlist}
+              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm transition-all hover:border-[#3f4e40] hover:text-[#b5b99f] cursor-pointer"
+            >
+              Join waitlist
+            </button>
+          </div>
         </div>
       </section>
 
