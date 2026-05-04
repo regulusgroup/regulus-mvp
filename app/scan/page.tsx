@@ -4,118 +4,158 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-type BusinessType = "payments" | "crypto" | "lending" | "neobank" | "insurance";
-type Handle = "user_data" | "crypto_assets" | "card_payments" | "cross_border" | "lending_credit";
+const BUSINESS_TYPES = [
+  { id: "payments",  label: "Payments App",    desc: "Wallets, transfers, payment processing" },
+  { id: "crypto",    label: "Crypto & DeFi",   desc: "Exchanges, custody, yield, tokenisation" },
+  { id: "lending",   label: "Lending & Credit", desc: "BNPL, loans, credit scoring" },
+  { id: "neobank",   label: "Neobank",          desc: "Digital accounts, cards, banking" },
+  { id: "insurance", label: "Insurtech",        desc: "Digital insurance products & distribution" },
+];
 
-interface Regulation {
-  id: string;
+const TECH_STACK = {
+  "AI Providers": [
+    { id: "openai",    label: "OpenAI" },
+    { id: "anthropic", label: "Anthropic (Claude)" },
+    { id: "gemini",    label: "Google Gemini" },
+    { id: "mistral",   label: "Mistral (EU)" },
+  ],
+  "Infrastructure": [
+    { id: "aws",       label: "AWS" },
+    { id: "gcp",       label: "Google Cloud" },
+    { id: "azure",     label: "Azure" },
+    { id: "supabase",  label: "Supabase" },
+    { id: "vercel",    label: "Vercel" },
+    { id: "hetzner",   label: "Hetzner (EU)" },
+  ],
+  "Payments & Banking": [
+    { id: "stripe",    label: "Stripe" },
+    { id: "adyen",     label: "Adyen" },
+    { id: "wise",      label: "Wise" },
+    { id: "plaid",     label: "Plaid" },
+  ],
+  "Crypto Tools": [
+    { id: "fireblocks",  label: "Fireblocks" },
+    { id: "chainalysis", label: "Chainalysis" },
+    { id: "alchemy",     label: "Alchemy" },
+  ],
+};
+
+const HANDLES = [
+  { id: "user_data",       label: "User data / KYC" },
+  { id: "crypto_assets",   label: "Crypto assets" },
+  { id: "card_payments",   label: "Card payments" },
+  { id: "cross_border",    label: "Cross-border transfers" },
+  { id: "lending_credit",  label: "Lending / Credit" },
+  { id: "user_funds",      label: "Custody of user funds" },
+];
+
+const COUNTRIES = [
+  "Malta", "Germany", "France", "Netherlands",
+  "Ireland", "Estonia", "Lithuania", "Spain", "Italy", "Other EU",
+];
+
+const STAGES = [
+  { id: "idea",      label: "Idea / Pre-launch", desc: "Building, haven't launched yet" },
+  { id: "mvp",       label: "MVP",               desc: "Live with first users" },
+  { id: "growing",   label: "Growing",            desc: "Revenue, expanding user base" },
+  { id: "scaling",   label: "Scaling",            desc: "Raising or scaling operations" },
+];
+
+const HAS_IN_PLACE = [
+  { id: "privacy_policy",  label: "Privacy policy" },
+  { id: "kyc_system",      label: "KYC system" },
+  { id: "legal_counsel",   label: "Legal counsel" },
+  { id: "banking_partner", label: "Banking partner" },
+  { id: "compliance_officer", label: "Compliance officer" },
+];
+
+// ─── Report types ─────────────────────────────────────────────────────────────
+
+interface RegulationResult {
   name: string;
   fullName: string;
   applies: boolean;
+  priority: "urgent" | "quarter" | "year" | "na";
   reason: string;
   action: string;
-  urgency: "high" | "medium" | "low";
 }
 
-// ─── Compliance logic ─────────────────────────────────────────────────────────
-
-function computeReport(business: BusinessType, handles: Handle[]): Regulation[] {
-  const h = (key: Handle) => handles.includes(key);
-
-  return [
-    {
-      id: "gdpr",
-      name: "GDPR",
-      fullName: "General Data Protection Regulation",
-      applies: true, // always
-      reason: "Any fintech processing EU user data is subject to GDPR.",
-      action: "Assess DPO necessity, document data flows, and implement a privacy policy.",
-      urgency: "high",
-    },
-    {
-      id: "aml",
-      name: "AML",
-      fullName: "Anti-Money Laundering Directive",
-      applies: ["payments", "crypto", "lending", "neobank"].includes(business) || h("cross_border") || h("crypto_assets") || h("lending_credit"),
-      reason: "Applies to businesses handling payments, crypto, lending, or cross-border transfers.",
-      action: "Implement KYC/KYB procedures, transaction monitoring, and file a SAR policy.",
-      urgency: "high",
-    },
-    {
-      id: "psd2",
-      name: "PSD2",
-      fullName: "Payment Services Directive 2",
-      applies: ["payments", "neobank"].includes(business) || h("card_payments") || h("cross_border"),
-      reason: "Applies to any service initiating or processing payments within the EU.",
-      action: "Obtain a Payment Institution license or partner with a licensed PI. Implement Strong Customer Authentication (SCA).",
-      urgency: "high",
-    },
-    {
-      id: "mica",
-      name: "MiCA",
-      fullName: "Markets in Crypto-Assets Regulation",
-      applies: business === "crypto" || h("crypto_assets"),
-      reason: "MiCA governs all crypto-asset services and issuers operating in the EU.",
-      action: "Register as a Crypto-Asset Service Provider (CASP). Prepare white paper disclosures.",
-      urgency: "high",
-    },
-    {
-      id: "dora",
-      name: "DORA",
-      fullName: "Digital Operational Resilience Act",
-      applies: ["payments", "neobank", "lending", "crypto"].includes(business),
-      reason: "DORA applies to regulated financial entities and requires ICT risk management.",
-      action: "Conduct an ICT risk assessment, set up incident reporting procedures, and test resilience.",
-      urgency: "medium",
-    },
-  ];
+interface TechFlag {
+  tool: string;
+  flag: string;
 }
 
-function getRiskLevel(regulations: Regulation[]) {
-  const count = regulations.filter((r) => r.applies).length;
-  if (count >= 4) return { label: "High", color: "#c97b7b", bg: "#2a1f1f" };
-  if (count >= 3) return { label: "Medium", color: "#c9a87b", bg: "#2a231a" };
-  return { label: "Low", color: "#b5b99f", bg: "#222720" };
+interface Report {
+  summary: string;
+  riskScore: number;
+  riskLevel: "Low" | "Medium" | "High" | "Critical";
+  regulations: RegulationResult[];
+  techStackFlags: TechFlag[];
+  thirtyDayPlan: string[];
+  costRange: string;
+  timelineToLaunch: string;
 }
 
-// ─── Step components ──────────────────────────────────────────────────────────
+// ─── UI helpers ───────────────────────────────────────────────────────────────
 
-const BUSINESS_TYPES: { id: BusinessType; label: string; desc: string }[] = [
-  { id: "payments", label: "Payments App", desc: "Money transfers, wallets, payment processing" },
-  { id: "crypto", label: "Crypto & DeFi", desc: "Exchanges, custody, tokenisation, DeFi protocols" },
-  { id: "lending", label: "Lending & Credit", desc: "BNPL, consumer loans, credit scoring" },
-  { id: "neobank", label: "Neobank", desc: "Digital banking, accounts, cards" },
-  { id: "insurance", label: "Insurtech", desc: "Digital insurance products and distribution" },
-];
+const PRIORITY_STYLES: Record<string, { label: string; color: string; bg: string }> = {
+  urgent:  { label: "Urgent",       color: "#c97b7b", bg: "#2a1f1f" },
+  quarter: { label: "This quarter", color: "#c9a87b", bg: "#2a231a" },
+  year:    { label: "This year",    color: "#b5b99f", bg: "#222720" },
+  na:      { label: "Not required", color: "#4a4f3e", bg: "transparent" },
+};
 
-const HANDLES: { id: Handle; label: string }[] = [
-  { id: "user_data", label: "User data / KYC" },
-  { id: "crypto_assets", label: "Crypto assets" },
-  { id: "card_payments", label: "Card payments" },
-  { id: "cross_border", label: "Cross-border transfers" },
-  { id: "lending_credit", label: "Lending / Credit" },
-];
+const RISK_COLOR: Record<string, string> = {
+  Low: "#b5b99f", Medium: "#c9a87b", High: "#c97b7b", Critical: "#e05555",
+};
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+function Chip({
+  label, selected, onClick,
+}: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="h-9 px-4 rounded-lg border text-xs transition-all cursor-pointer"
+      style={{
+        borderColor: selected ? "#3f4e40" : "#2e3329",
+        background:  selected ? "#222720" : "transparent",
+        color:       selected ? "#b5b99f" : "#7a7f6a",
+      }}
+    >
+      {selected ? "✓ " : ""}{label}
+    </button>
+  );
+}
 
-export default function ScanPage() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [business, setBusiness] = useState<BusinessType | null>(null);
-  const [handles, setHandles] = useState<Handle[]>([]);
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+
+function Skeleton() {
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-2xl animate-pulse">
+      <div className="h-6 w-2/3 rounded bg-[#222720]" />
+      <div className="h-4 w-full rounded bg-[#222720]" />
+      <div className="h-4 w-5/6 rounded bg-[#222720]" />
+      <div className="h-px bg-[#2e3329] my-2" />
+      {[1,2,3].map(i => (
+        <div key={i} className="rounded-xl border border-[#2e3329] p-5 flex flex-col gap-3">
+          <div className="h-4 w-1/4 rounded bg-[#222720]" />
+          <div className="h-3 w-full rounded bg-[#222720]" />
+          <div className="h-3 w-4/5 rounded bg-[#222720]" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Report renderer ──────────────────────────────────────────────────────────
+
+function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) {
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "duplicate">("idle");
-
-  const regulations = business ? computeReport(business, handles) : [];
-  const applicable = regulations.filter((r) => r.applies);
-  const risk = business ? getRiskLevel(regulations) : null;
-
-  function toggleHandle(id: Handle) {
-    setHandles((prev) =>
-      prev.includes(id) ? prev.filter((h) => h !== id) : [...prev, id]
-    );
-  }
+  const riskColor = RISK_COLOR[report.riskLevel] ?? "#b5b99f";
 
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -123,9 +163,234 @@ export default function ScanPage() {
     const res = await fetch("/api/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, role: business ?? "" }),
+      body: JSON.stringify({ email }),
     });
     setEmailStatus(res.status === 409 ? "duplicate" : "done");
+  }
+
+  return (
+    <div className="flex flex-col gap-8 w-full max-w-2xl">
+
+      {/* Header */}
+      <div className="flex flex-col gap-3">
+        <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Your compliance snapshot</p>
+        <div className="flex items-center gap-4">
+          <div
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border"
+            style={{ borderColor: riskColor + "40", background: riskColor + "10" }}
+          >
+            <div className="w-2 h-2 rounded-full" style={{ background: riskColor }} />
+            <span className="text-sm font-medium" style={{ color: riskColor }}>
+              {report.riskLevel} risk — {report.riskScore}/10
+            </span>
+          </div>
+        </div>
+        <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
+      </div>
+
+      <div className="h-px bg-[#2e3329]" />
+
+      {/* Regulations */}
+      <div className="flex flex-col gap-3">
+        <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Regulations</p>
+        {report.regulations?.map((reg) => {
+          const p = PRIORITY_STYLES[reg.priority] ?? PRIORITY_STYLES.na;
+          return (
+            <div
+              key={reg.name}
+              className="rounded-xl border p-5 flex flex-col gap-3"
+              style={{
+                borderColor: reg.applies ? "#3f4e40" : "#2e3329",
+                background:  reg.applies ? "#222720" : "transparent",
+                opacity:     reg.applies ? 1 : 0.4,
+              }}
+            >
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-xs font-semibold px-2 py-0.5 rounded"
+                    style={{ background: "#3f4e40", color: "#b5b99f" }}
+                  >
+                    {reg.name}
+                  </span>
+                  <span className="text-xs text-[#7a7f6a]">{reg.fullName}</span>
+                </div>
+                {reg.applies && (
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full border"
+                    style={{ borderColor: p.color + "50", color: p.color, background: p.bg }}
+                  >
+                    {p.label}
+                  </span>
+                )}
+              </div>
+              {reg.applies && (
+                <>
+                  <p className="text-xs text-[#7a7f6a] leading-relaxed">{reg.reason}</p>
+                  <div className="flex gap-2 items-start border-t border-[#2e3329] pt-3">
+                    <span className="text-[10px] text-[#3f4e40] uppercase tracking-widest mt-0.5 shrink-0">Action</span>
+                    <p className="text-xs text-[#b5b99f] leading-relaxed">{reg.action}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tech stack flags */}
+      {report.techStackFlags?.length > 0 && (
+        <>
+          <div className="h-px bg-[#2e3329]" />
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Your tech stack — compliance flags</p>
+            {report.techStackFlags.map((f, i) => (
+              <div key={i} className="rounded-lg border border-[#2e3329] bg-[#222720] px-4 py-3 flex gap-3 items-start">
+                <span className="text-xs font-medium text-[#b5b99f] shrink-0 mt-0.5">{f.tool}</span>
+                <span className="text-xs text-[#7a7f6a] leading-relaxed">{f.flag}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* 30-day plan */}
+      {report.thirtyDayPlan?.length > 0 && (
+        <>
+          <div className="h-px bg-[#2e3329]" />
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-[#3f4e40] uppercase tracking-widest">Your 30-day action plan</p>
+            {report.thirtyDayPlan.map((action, i) => (
+              <div key={i} className="flex gap-3 items-start">
+                <span
+                  className="w-5 h-5 rounded-full border border-[#3f4e40] flex items-center justify-center text-[10px] text-[#3f4e40] shrink-0 mt-0.5"
+                >
+                  {i + 1}
+                </span>
+                <p className="text-sm text-[#b5b99f] leading-relaxed">{action}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Cost & timeline */}
+      {(report.costRange || report.timelineToLaunch) && (
+        <>
+          <div className="h-px bg-[#2e3329]" />
+          <div className="grid grid-cols-2 gap-4">
+            {report.costRange && (
+              <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-1">
+                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Est. compliance cost</p>
+                <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+                  {report.costRange}
+                </p>
+              </div>
+            )}
+            {report.timelineToLaunch && (
+              <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-1">
+                <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest">Timeline to launch</p>
+                <p className="text-lg font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+                  {report.timelineToLaunch}
+                </p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Email capture */}
+      <div className="rounded-xl border border-[#3f4e40]/40 bg-[#222720] p-6 flex flex-col gap-4 text-center">
+        {emailStatus === "done" || emailStatus === "duplicate" ? (
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm font-medium text-[#b5b99f]">
+              {emailStatus === "done" ? "You're on the list." : "You're already on the list."}
+            </p>
+            <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm font-medium text-[#b5b99f]">Get the full dashboard — free early access</p>
+            <p className="text-xs text-[#7a7f6a] leading-relaxed">
+              Regulus tracks all of this automatically and updates when regulations change.
+            </p>
+            <form onSubmit={submitEmail} className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="email"
+                required
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
+              />
+              <button
+                type="submit"
+                disabled={emailStatus === "loading"}
+                className="h-10 px-5 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer shrink-0"
+              >
+                {emailStatus === "loading" ? "Saving…" : "Get full access"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+
+      <button
+        onClick={onEdit}
+        className="text-xs text-[#4a4f3e] hover:text-[#7a7f6a] transition-colors cursor-pointer"
+      >
+        ← Start over
+      </button>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function ScanPage() {
+  const [step, setStep] = useState(1);
+  const [description, setDescription] = useState("");
+  const [business, setBusiness] = useState("");
+  const [techStack, setTechStack] = useState<string[]>([]);
+  const [handles, setHandles] = useState<string[]>([]);
+  const [country, setCountry] = useState("");
+  const [stage, setStage] = useState("");
+  const [hasInPlace, setHasInPlace] = useState<string[]>([]);
+  const [report, setReport] = useState<Report | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const totalSteps = 4;
+
+  function toggle(list: string[], setList: (v: string[]) => void, id: string) {
+    setList(list.includes(id) ? list.filter(i => i !== id) : [...list, id]);
+  }
+
+  async function generate() {
+    setLoading(true);
+    setError("");
+    setStep(5);
+    try {
+      const res = await fetch("/api/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description, businessType: business, techStack, handles, country, stage, hasInPlace }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setReport(data);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setStep(4);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function reset() {
+    setStep(1); setDescription(""); setBusiness(""); setTechStack([]);
+    setHandles([]); setCountry(""); setStage(""); setHasInPlace([]);
+    setReport(null); setError("");
   }
 
   return (
@@ -136,228 +401,255 @@ export default function ScanPage() {
         <Link href="/">
           <Image src="/logos/logo-green.svg" alt="Regulus" width={100} height={36} priority />
         </Link>
-        <div className="flex items-center gap-3">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className="flex items-center gap-1.5"
-            >
-              <div
-                className="w-5 h-5 rounded-full border flex items-center justify-center text-[10px] transition-all"
-                style={{
-                  borderColor: step >= s ? "#3f4e40" : "#2e3329",
-                  background: step > s ? "#3f4e40" : "transparent",
-                  color: step >= s ? "#b5b99f" : "#4a4f3e",
-                }}
-              >
-                {step > s ? "✓" : s}
+
+        {/* Step indicator */}
+        {step <= totalSteps && (
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s) => (
+              <div key={s} className="flex items-center gap-1.5">
+                <div
+                  className="w-5 h-5 rounded-full border flex items-center justify-center text-[10px] transition-all"
+                  style={{
+                    borderColor: step >= s ? "#3f4e40" : "#2e3329",
+                    background:  step > s  ? "#3f4e40" : "transparent",
+                    color:       step >= s ? "#b5b99f" : "#4a4f3e",
+                  }}
+                >
+                  {step > s ? "✓" : s}
+                </div>
+                {s < totalSteps && (
+                  <div className="w-4 h-px" style={{ background: step > s ? "#3f4e40" : "#2e3329" }} />
+                )}
               </div>
-              {s < 3 && <div className="w-6 h-px" style={{ background: step > s ? "#3f4e40" : "#2e3329" }} />}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </nav>
 
       <main className="flex flex-col items-center flex-1 px-6 py-16">
 
-        {/* ── Step 1: Business type ── */}
+        {/* ── Step 1: Description + business type ── */}
         {step === 1 && (
           <div className="flex flex-col items-center gap-10 max-w-2xl w-full">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 1 of 3</p>
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 1 of {totalSteps}</p>
               <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "MomoTrust, serif" }}>
-                What are you building?
+                Tell us what you&apos;re building.
               </h1>
-              <p className="text-sm text-[#7a7f6a]">Select the type that best describes your product.</p>
+              <p className="text-sm text-[#7a7f6a]">The more specific, the more accurate your compliance snapshot.</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-              {BUSINESS_TYPES.map(({ id, label, desc }) => (
-                <button
-                  key={id}
-                  onClick={() => setBusiness(id)}
-                  className="rounded-xl border p-5 text-left flex flex-col gap-1.5 transition-all cursor-pointer"
-                  style={{
-                    borderColor: business === id ? "#3f4e40" : "#2e3329",
-                    background: business === id ? "#222720" : "transparent",
-                  }}
-                >
-                  <span className="text-sm font-medium text-[#b5b99f]">{label}</span>
-                  <span className="text-xs text-[#7a7f6a] leading-relaxed">{desc}</span>
-                </button>
-              ))}
+            <div className="flex flex-col gap-3 w-full">
+              <label className="text-xs text-[#7a7f6a] uppercase tracking-widest">Describe your product</label>
+              <textarea
+                rows={3}
+                placeholder="e.g. A crypto wallet for EU users that lets them earn yield on stablecoins and send cross-border payments..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors resize-none leading-relaxed"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3 w-full">
+              <label className="text-xs text-[#7a7f6a] uppercase tracking-widest">Business type</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {BUSINESS_TYPES.map(({ id, label, desc }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setBusiness(id)}
+                    className="rounded-xl border p-4 text-left flex flex-col gap-1 transition-all cursor-pointer"
+                    style={{
+                      borderColor: business === id ? "#3f4e40" : "#2e3329",
+                      background:  business === id ? "#222720" : "transparent",
+                    }}
+                  >
+                    <span className="text-sm font-medium text-[#b5b99f]">{label}</span>
+                    <span className="text-xs text-[#7a7f6a]">{desc}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
-              disabled={!business}
+              disabled={!description.trim() || !business}
               onClick={() => setStep(2)}
-              className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium transition-all hover:opacity-90 disabled:opacity-30 cursor-pointer"
+              className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-30 cursor-pointer"
             >
               Continue →
             </button>
           </div>
         )}
 
-        {/* ── Step 2: What you handle ── */}
+        {/* ── Step 2: Tech stack + what you handle ── */}
         {step === 2 && (
           <div className="flex flex-col items-center gap-10 max-w-2xl w-full">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 2 of 3</p>
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 2 of {totalSteps}</p>
               <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "MomoTrust, serif" }}>
-                What does your product handle?
+                What tools do you use?
               </h1>
-              <p className="text-sm text-[#7a7f6a]">Select all that apply.</p>
+              <p className="text-sm text-[#7a7f6a]">Your tech stack affects your compliance obligations directly.</p>
             </div>
 
-            <div className="flex flex-wrap gap-3 justify-center w-full">
-              {HANDLES.map(({ id, label }) => (
-                <button
-                  key={id}
-                  onClick={() => toggleHandle(id)}
-                  className="h-10 px-4 rounded-lg border text-sm transition-all cursor-pointer"
-                  style={{
-                    borderColor: handles.includes(id) ? "#3f4e40" : "#2e3329",
-                    background: handles.includes(id) ? "#222720" : "transparent",
-                    color: handles.includes(id) ? "#b5b99f" : "#7a7f6a",
-                  }}
-                >
-                  {handles.includes(id) ? "✓ " : ""}{label}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setStep(1)}
-                className="h-11 px-6 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] transition-all cursor-pointer"
-              >
-                ← Back
-              </button>
-              <button
-                onClick={() => setStep(3)}
-                className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium transition-all hover:opacity-90 cursor-pointer"
-              >
-                See my compliance snapshot →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 3: Results ── */}
-        {step === 3 && risk && (
-          <div className="flex flex-col items-center gap-10 max-w-2xl w-full">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Your compliance snapshot</p>
-              <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "MomoTrust, serif" }}>
-                {applicable.length} regulation{applicable.length !== 1 ? "s" : ""} apply to you.
-              </h1>
-            </div>
-
-            {/* Risk badge */}
-            <div
-              className="flex items-center gap-3 px-5 py-3 rounded-xl border"
-              style={{ borderColor: risk.color + "40", background: risk.bg }}
-            >
-              <div className="w-2 h-2 rounded-full" style={{ background: risk.color }} />
-              <span className="text-sm" style={{ color: risk.color }}>
-                Overall compliance risk: <strong>{risk.label}</strong>
-              </span>
-            </div>
-
-            {/* Regulations grid */}
-            <div className="flex flex-col gap-3 w-full">
-              {regulations.map((reg) => (
-                <div
-                  key={reg.id}
-                  className="rounded-xl border p-5 flex flex-col gap-3"
-                  style={{
-                    borderColor: reg.applies ? "#3f4e40" : "#2e3329",
-                    background: reg.applies ? "#222720" : "transparent",
-                    opacity: reg.applies ? 1 : 0.4,
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="text-xs font-semibold px-2 py-0.5 rounded"
-                        style={{
-                          background: reg.applies ? "#3f4e40" : "#2e3329",
-                          color: reg.applies ? "#b5b99f" : "#7a7f6a",
-                        }}
-                      >
-                        {reg.name}
-                      </span>
-                      <span className="text-xs text-[#7a7f6a]">{reg.fullName}</span>
-                    </div>
-                    <span className="text-xs" style={{ color: reg.applies ? "#b5b99f" : "#4a4f3e" }}>
-                      {reg.applies ? "Applies ✓" : "Not applicable"}
-                    </span>
+            <div className="flex flex-col gap-6 w-full">
+              {Object.entries(TECH_STACK).map(([category, tools]) => (
+                <div key={category} className="flex flex-col gap-3">
+                  <p className="text-xs text-[#7a7f6a] uppercase tracking-widest">{category}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {tools.map(({ id, label }) => (
+                      <Chip
+                        key={id}
+                        label={label}
+                        selected={techStack.includes(id)}
+                        onClick={() => toggle(techStack, setTechStack, id)}
+                      />
+                    ))}
                   </div>
-                  {reg.applies && (
-                    <>
-                      <p className="text-xs text-[#7a7f6a] leading-relaxed">{reg.reason}</p>
-                      <div className="flex gap-2 items-start">
-                        <span className="text-[10px] text-[#3f4e40] uppercase tracking-widest mt-0.5 shrink-0">Action</span>
-                        <p className="text-xs text-[#b5b99f] leading-relaxed">{reg.action}</p>
-                      </div>
-                    </>
-                  )}
                 </div>
               ))}
-            </div>
 
-            {/* Email capture */}
-            <div className="w-full rounded-xl border border-[#3f4e40]/40 bg-[#222720] p-6 flex flex-col gap-4 text-center">
-              {emailStatus === "done" || emailStatus === "duplicate" ? (
-                <div className="flex flex-col items-center gap-2">
-                  <p className="text-sm font-medium text-[#b5b99f]">
-                    {emailStatus === "done" ? "You're on the list." : "You're already on the list."}
-                  </p>
-                  <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm font-medium text-[#b5b99f]">Save your report & get early access</p>
-                  <p className="text-xs text-[#7a7f6a] leading-relaxed">
-                    The full Regulus dashboard tracks all of this automatically — updated as regulations change.
-                  </p>
-                  <form onSubmit={submitEmail} className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="email"
-                      required
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="flex-1 h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
+              <div className="flex flex-col gap-3">
+                <p className="text-xs text-[#7a7f6a] uppercase tracking-widest">What your product handles</p>
+                <div className="flex flex-wrap gap-2">
+                  {HANDLES.map(({ id, label }) => (
+                    <Chip
+                      key={id}
+                      label={label}
+                      selected={handles.includes(id)}
+                      onClick={() => toggle(handles, setHandles, id)}
                     />
-                    <button
-                      type="submit"
-                      disabled={emailStatus === "loading"}
-                      className="h-10 px-5 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer shrink-0"
-                    >
-                      {emailStatus === "loading" ? "Saving…" : "Get full access"}
-                    </button>
-                  </form>
-                </>
-              )}
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-3">
-              <button
-                onClick={() => setStep(2)}
-                className="h-9 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] transition-all cursor-pointer"
-              >
-                ← Edit answers
-              </button>
-              <Link
-                href="/"
-                className="h-9 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] transition-all flex items-center"
-              >
-                Back to home
-              </Link>
+              <button onClick={() => setStep(1)} className="h-11 px-6 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] cursor-pointer">← Back</button>
+              <button onClick={() => setStep(3)} className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 cursor-pointer">Continue →</button>
             </div>
           </div>
         )}
+
+        {/* ── Step 3: Country + stage ── */}
+        {step === 3 && (
+          <div className="flex flex-col items-center gap-10 max-w-2xl w-full">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 3 of {totalSteps}</p>
+              <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "MomoTrust, serif" }}>
+                Where are you based?
+              </h1>
+              <p className="text-sm text-[#7a7f6a]">Regulations are implemented differently across EU member states.</p>
+            </div>
+
+            <div className="flex flex-col gap-6 w-full">
+              <div className="flex flex-col gap-3">
+                <p className="text-xs text-[#7a7f6a] uppercase tracking-widest">Country</p>
+                <div className="flex flex-wrap gap-2">
+                  {COUNTRIES.map((c) => (
+                    <Chip key={c} label={c} selected={country === c} onClick={() => setCountry(c)} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <p className="text-xs text-[#7a7f6a] uppercase tracking-widest">Stage</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {STAGES.map(({ id, label, desc }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setStage(id)}
+                      className="rounded-xl border p-4 text-left flex flex-col gap-1 transition-all cursor-pointer"
+                      style={{
+                        borderColor: stage === id ? "#3f4e40" : "#2e3329",
+                        background:  stage === id ? "#222720" : "transparent",
+                      }}
+                    >
+                      <span className="text-sm font-medium text-[#b5b99f]">{label}</span>
+                      <span className="text-xs text-[#7a7f6a]">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setStep(2)} className="h-11 px-6 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] cursor-pointer">← Back</button>
+              <button
+                disabled={!country || !stage}
+                onClick={() => setStep(4)}
+                className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-30 cursor-pointer"
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 4: What you have + generate ── */}
+        {step === 4 && (
+          <div className="flex flex-col items-center gap-10 max-w-2xl w-full">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Step 4 of {totalSteps}</p>
+              <h1 className="text-3xl md:text-4xl" style={{ fontFamily: "MomoTrust, serif" }}>
+                What do you already have?
+              </h1>
+              <p className="text-sm text-[#7a7f6a]">We&apos;ll factor this into your action plan.</p>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-center w-full">
+              {HAS_IN_PLACE.map(({ id, label }) => (
+                <Chip
+                  key={id}
+                  label={label}
+                  selected={hasInPlace.includes(id)}
+                  onClick={() => toggle(hasInPlace, setHasInPlace, id)}
+                />
+              ))}
+              <Chip
+                label="Nothing yet"
+                selected={hasInPlace.length === 0}
+                onClick={() => setHasInPlace([])}
+              />
+            </div>
+
+            {error && (
+              <p className="text-xs text-red-400 text-center">{error}</p>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={() => setStep(3)} className="h-11 px-6 rounded-lg border border-[#2e3329] text-sm text-[#7a7f6a] hover:border-[#3f4e40] cursor-pointer">← Back</button>
+              <button
+                onClick={generate}
+                className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 cursor-pointer"
+              >
+                Generate my compliance report →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 5: Loading / Results ── */}
+        {step === 5 && (
+          <div className="flex flex-col items-center gap-8 w-full max-w-2xl">
+            {loading ? (
+              <>
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Analysing your setup</p>
+                  <h1 className="text-2xl" style={{ fontFamily: "MomoTrust, serif" }}>
+                    Generating your compliance report…
+                  </h1>
+                  <p className="text-xs text-[#7a7f6a]">This takes 10–20 seconds.</p>
+                </div>
+                <Skeleton />
+              </>
+            ) : report ? (
+              <ReportView report={report} onEdit={reset} />
+            ) : null}
+          </div>
+        )}
+
       </main>
 
       {/* Footer */}
