@@ -1,6 +1,6 @@
 "use client";
-// v2
-import { useState, useRef } from "react";
+// v3
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -47,111 +47,10 @@ function ReportIcon() {
   );
 }
 
-// ─── Waitlist form ─────────────────────────────────────────────────────────────
-
-const ROLES = [
-  "Founder / CEO",
-  "CTO / Engineering Lead",
-  "Compliance Officer",
-  "Legal Counsel",
-  "Investor / VC",
-  "Advisor",
-  "Other",
-];
-
-function WaitlistForm() {
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "duplicate">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
-    const res = await fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, role }),
-    });
-    if (res.ok) {
-      setStatus("success");
-    } else if (res.status === 409) {
-      setStatus("duplicate");
-    } else {
-      const data = await res.json();
-      setErrorMsg(data.error || "Something went wrong.");
-      setStatus("error");
-    }
-  }
-
-  if (status === "success") {
-    return (
-      <div className="flex flex-col items-center gap-4 text-center py-8">
-        <div className="w-14 h-14 rounded-full border border-[#3f4e40]/40 flex items-center justify-center">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M5 13l4 4L19 7" stroke="#b5b99f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <p className="text-[#b5b99f] font-medium">You&apos;re on the list.</p>
-        <p className="text-sm text-[#7a7f6a] max-w-xs leading-relaxed">
-          We&apos;ll reach out personally when we open early access — no mass emails.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full max-w-md mx-auto">
-      <input
-        type="email"
-        required
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="h-12 px-4 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
-      />
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        className="h-12 px-4 rounded-lg border border-[#2e3329] bg-[#222720] text-sm outline-none focus:border-[#3f4e40] transition-colors appearance-none cursor-pointer"
-        style={{ color: role ? "#b5b99f" : "#4a4f3e" }}
-      >
-        <option value="" disabled>Your role (optional)</option>
-        {ROLES.map((r) => (
-          <option key={r} value={r} style={{ color: "#b5b99f", background: "#222720" }}>{r}</option>
-        ))}
-      </select>
-
-      {status === "duplicate" && (
-        <p className="text-xs text-[#7a7f6a] text-center">You&apos;re already on the list.</p>
-      )}
-      {status === "error" && (
-        <p className="text-xs text-red-400 text-center">{errorMsg}</p>
-      )}
-
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="h-12 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:bg-[#3f4e40] disabled:opacity-50 cursor-pointer border border-[#3f4e40]/30"
-      >
-        {status === "loading" ? "Joining…" : "Join the waitlist"}
-      </button>
-
-      <p className="text-xs text-[#4a4f3e] text-center">
-        No spam. We&apos;ll reach out when it matters.
-      </p>
-    </form>
-  );
-}
-
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   const waitlistRef = useRef<HTMLElement>(null);
-
-  function scrollToWaitlist() {
-    waitlistRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#1a1f18] text-[#b5b99f]">
@@ -165,12 +64,12 @@ export default function Home() {
           height={43}
           priority
         />
-        <button
-          onClick={scrollToWaitlist}
-          className="h-8 px-4 rounded-lg border border-[#3f4e40] text-xs text-[#b5b99f] hover:border-[#3f4e40] hover:text-[#b5b99f] transition-colors cursor-pointer"
+        <Link
+          href="/waitlist"
+          className="h-8 px-4 rounded-lg border border-[#3f4e40] text-xs text-[#b5b99f] hover:opacity-80 transition-opacity"
         >
           Join waitlist
-        </button>
+        </Link>
       </nav>
 
       {/* Hero */}
@@ -199,14 +98,14 @@ export default function Home() {
               href="/scan"
               className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm transition-all hover:opacity-90 flex items-center border border-[#3f4e40]"
             >
-              Scan my compliance risk →
+              Get your compliance snapshot →
             </Link>
-            <button
-              onClick={scrollToWaitlist}
-              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm transition-all hover:border-[#3f4e40] hover:text-[#b5b99f] cursor-pointer"
+            <Link
+              href="/waitlist"
+              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm transition-all hover:border-[#3f4e40] hover:text-[#b5b99f]"
             >
               Join waitlist
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -373,9 +272,9 @@ export default function Home() {
 
       <div className="w-full max-w-4xl mx-auto h-px bg-[#2e3329]" />
 
-      {/* Waitlist */}
+      {/* Waitlist CTA */}
       <section ref={waitlistRef} className="flex flex-col items-center px-6 py-32">
-        <div className="flex flex-col items-center gap-10 max-w-lg w-full text-center">
+        <div className="flex flex-col items-center gap-8 max-w-lg w-full text-center">
           <div className="flex flex-col gap-4">
             <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Early access</p>
             <h2
@@ -384,12 +283,25 @@ export default function Home() {
             >
               Get in early.<br />Help shape what we build.
             </h2>
-            <p className="text-[#7a7f6a] text-sm leading-relaxed">
+            <p className="text-[#7a7f6a] text-sm leading-relaxed max-w-sm mx-auto">
               We&apos;re onboarding a small group of design partners — founders, compliance leads, and investors who want to influence the roadmap and get first access.
             </p>
           </div>
 
-          <WaitlistForm />
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/waitlist"
+              className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm hover:opacity-90 transition-all"
+            >
+              Join the waitlist
+            </Link>
+            <Link
+              href="/scan"
+              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm hover:border-[#3f4e40] hover:text-[#b5b99f] transition-all"
+            >
+              Try the snapshot first
+            </Link>
+          </div>
         </div>
       </section>
 

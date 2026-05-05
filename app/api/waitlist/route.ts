@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { email, role } = await req.json();
+  const { name, email, role, company } = await req.json();
 
   if (!email || typeof email !== "string" || !email.includes("@")) {
     return NextResponse.json({ error: "Valid email required." }, { status: 400 });
@@ -12,7 +12,12 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabase
     .from("waitlist")
-    .insert({ email: email.trim().toLowerCase(), role: role || null });
+    .insert({
+      email:   email.trim().toLowerCase(),
+      name:    name?.trim()    || null,
+      role:    role            || null,
+      company: company?.trim() || null,
+    });
 
   if (error) {
     if (error.code === "23505") {

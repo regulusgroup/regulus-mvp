@@ -279,23 +279,10 @@ function Skeleton() {
 
 function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) {
   const [slide, setSlide] = useState(0);
-  const [email, setEmail] = useState("");
-  const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "done" | "duplicate">("idle");
   const riskColor = RISK_COLOR[report.riskLevel] ?? "#b5b99f";
 
   const slides = ["Overview", "Regulations", "Tech Stack", "Action Plan", "Summary"];
   const total = slides.length;
-
-  async function submitEmail(e: React.FormEvent) {
-    e.preventDefault();
-    setEmailStatus("loading");
-    const res = await fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    setEmailStatus(res.status === 409 ? "duplicate" : "done");
-  }
 
   // derive 3 key takeaways from the report
   const keyTakeaways = [
@@ -457,35 +444,13 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
             </div>
 
             <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3 mt-auto">
-              {emailStatus === "done" || emailStatus === "duplicate" ? (
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium text-[#b5b99f]">
-                    {emailStatus === "done" ? "You're on the list." : "Already on the list."}
-                  </p>
-                  <p className="text-xs text-[#7a7f6a]">We'll reach out when early access opens.</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-xs text-[#7a7f6a]">Get the full dashboard — tracks all of this as regulations change.</p>
-                  <form onSubmit={submitEmail} className="flex gap-2">
-                    <input
-                      type="email"
-                      required
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="flex-1 h-10 px-3 rounded-lg border border-[#2e3329] bg-[#1a1f18] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors"
-                    />
-                    <button
-                      type="submit"
-                      disabled={emailStatus === "loading"}
-                      className="h-10 px-5 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 disabled:opacity-50 cursor-pointer shrink-0"
-                    >
-                      {emailStatus === "loading" ? "…" : "Get access"}
-                    </button>
-                  </form>
-                </>
-              )}
+              <p className="text-xs text-[#7a7f6a]">Get the full dashboard — tracks all of this as regulations change.</p>
+              <Link
+                href="/waitlist"
+                className="h-10 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
+              >
+                Join the waitlist →
+              </Link>
             </div>
           </div>
         )}
