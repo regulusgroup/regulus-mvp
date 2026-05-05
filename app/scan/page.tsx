@@ -8,50 +8,73 @@ import Link from "next/link";
 
 const BUSINESS_CATEGORIES = [
   {
-    id: "banking",
-    label: "Banking & Accounts",
+    id: "ai_saas",
+    label: "AI & Software",
+    icon: "🤖",
+    types: [
+      { id: "saas_ai",    label: "B2B SaaS with AI",        desc: "SaaS product with AI features that processes user data" },
+      { id: "dev_tools",  label: "Developer Tools & APIs",  desc: "APIs, SDKs, platforms used by other developers" },
+      { id: "analytics",  label: "Data & Analytics",        desc: "Data pipelines, BI tools, customer intelligence platforms" },
+      { id: "ai_agent",   label: "AI Agents / Automation",  desc: "Autonomous AI agents, workflow automation, AI assistants" },
+    ],
+  },
+  {
+    id: "health",
+    label: "Healthcare & Life Sciences",
+    icon: "🏥",
+    types: [
+      { id: "digital_health", label: "Digital Health / Telemedicine", desc: "Patient apps, remote consultations, health monitoring" },
+      { id: "medtech",        label: "Medical Devices (SaMD)",        desc: "Software as a Medical Device — diagnostics, decision support" },
+      { id: "wellness",       label: "Health & Wellness Apps",        desc: "Fitness, mental health, nutrition — consumer data at scale" },
+      { id: "pharma_tech",    label: "Pharma & Biotech Tech",         desc: "Clinical trials, drug discovery, research data platforms" },
+    ],
+  },
+  {
+    id: "hr_people",
+    label: "HR & Workforce",
+    icon: "👥",
+    types: [
+      { id: "recruitment",   label: "Recruitment & ATS",        desc: "Applicant tracking, CV screening, candidate scoring" },
+      { id: "hr_mgmt",       label: "HR Management",            desc: "Employee records, performance management, payroll" },
+      { id: "workforce_ai",  label: "Workforce Analytics",      desc: "Productivity monitoring, workforce planning, people analytics" },
+    ],
+  },
+  {
+    id: "commerce",
+    label: "Commerce & Marketing",
+    icon: "🛍️",
+    types: [
+      { id: "ecommerce",    label: "E-commerce & Retail",    desc: "Online stores, marketplaces, personalised shopping" },
+      { id: "martech",      label: "MarTech & AdTech",       desc: "Ad targeting, email automation, customer segmentation" },
+      { id: "crm_cx",       label: "CRM & Customer Success", desc: "Customer relationship platforms, support tooling" },
+    ],
+  },
+  {
+    id: "professional",
+    label: "Professional Services",
+    icon: "⚖️",
+    types: [
+      { id: "legaltech",   label: "Legal Tech",        desc: "Contract analysis, legal research, document automation" },
+      { id: "edtech",      label: "EdTech",            desc: "E-learning, student profiling, adaptive learning" },
+      { id: "proptech",    label: "PropTech",          desc: "Property management, smart buildings, real estate platforms" },
+      { id: "govtech",     label: "GovTech / RegTech", desc: "Public sector software, regulatory reporting, compliance tools" },
+    ],
+  },
+  {
+    id: "financial",
+    label: "Financial Services",
     icon: "🏦",
     types: [
-      { id: "neobank",     label: "Neobank",           desc: "Digital accounts, cards, banking services" },
-      { id: "embedded",    label: "Embedded Finance",  desc: "BaaS, white-label financial products" },
-      { id: "openbanking", label: "Open Banking",      desc: "Account aggregation, PFM, data APIs" },
-    ],
-  },
-  {
-    id: "payments",
-    label: "Payments & Money Movement",
-    icon: "💸",
-    types: [
-      { id: "payments",   label: "Payments App",    desc: "Wallets, transfers, payment processing" },
-      { id: "b2bfinance", label: "B2B Finance",     desc: "Corporate payments, treasury, FX" },
-      { id: "payroll",    label: "Payroll & HR",    desc: "Salary, benefits, expense management" },
-    ],
-  },
-  {
-    id: "lending",
-    label: "Lending & Credit",
-    icon: "📋",
-    types: [
-      { id: "lending",  label: "Consumer Lending", desc: "BNPL, personal loans, credit scoring" },
-      { id: "proptech", label: "PropTech Finance", desc: "Mortgage, property investment, real estate" },
-    ],
-  },
-  {
-    id: "investing",
-    label: "Investing & Crypto",
-    icon: "📈",
-    types: [
-      { id: "wealthtech", label: "Wealthtech",   desc: "Robo-advisors, investing, trading platforms" },
-      { id: "crypto",     label: "Crypto & DeFi", desc: "Exchanges, custody, yield, tokenisation" },
-    ],
-  },
-  {
-    id: "risk",
-    label: "Insurance & Compliance",
-    icon: "🛡️",
-    types: [
-      { id: "insurance", label: "Insurtech", desc: "Digital insurance products & distribution" },
-      { id: "regtech",   label: "Regtech",   desc: "Compliance tools, regulatory reporting, AML" },
+      { id: "neobank",     label: "Neobank",            desc: "Digital accounts, cards, banking services" },
+      { id: "payments",    label: "Payments App",       desc: "Wallets, transfers, payment processing" },
+      { id: "lending",     label: "Lending & Credit",   desc: "BNPL, personal loans, credit scoring" },
+      { id: "crypto",      label: "Crypto & DeFi",      desc: "Exchanges, custody, yield, tokenisation" },
+      { id: "wealthtech",  label: "Wealthtech",         desc: "Robo-advisors, investing, trading platforms" },
+      { id: "embedded",    label: "Embedded Finance",   desc: "BaaS, white-label financial products" },
+      { id: "openbanking", label: "Open Banking",       desc: "Account aggregation, PFM, data APIs" },
+      { id: "b2bfinance",  label: "B2B Finance",        desc: "Corporate payments, treasury, FX" },
+      { id: "insurance",   label: "Insurtech",          desc: "Digital insurance products & distribution" },
+      { id: "regtech",     label: "Regtech",            desc: "Compliance tools, regulatory reporting, AML" },
     ],
   },
 ];
@@ -85,12 +108,18 @@ const TECH_STACK = {
 };
 
 const HANDLES = [
-  { id: "user_data",       label: "User data / KYC" },
+  { id: "personal_data",   label: "Personal profiles / identity" },
+  { id: "health_data",     label: "Health or medical data" },
+  { id: "financial_data",  label: "Financial data" },
+  { id: "employee_data",   label: "Employee data" },
+  { id: "behavioral_data", label: "Behavioral / usage data" },
+  { id: "biometric_data",  label: "Biometric data" },
+  { id: "children_data",   label: "Children's data (under 16)" },
+  { id: "card_payments",   label: "Payment card data" },
   { id: "crypto_assets",   label: "Crypto assets" },
-  { id: "card_payments",   label: "Card payments" },
+  { id: "user_funds",      label: "Custody of client funds" },
   { id: "cross_border",    label: "Cross-border transfers" },
-  { id: "lending_credit",  label: "Lending / Credit" },
-  { id: "user_funds",      label: "Custody of user funds" },
+  { id: "lending_credit",  label: "Lending / Credit decisions" },
 ];
 
 const COUNTRIES = [
@@ -536,7 +565,7 @@ export default function ScanPage() {
               <label className="text-xs text-[#7a7f6a] uppercase tracking-widest">Describe your product</label>
               <textarea
                 rows={3}
-                placeholder="e.g. A crypto wallet for EU users that lets them earn yield on stablecoins and send cross-border payments..."
+                placeholder="e.g. A B2B SaaS platform that uses AI to analyse HR data and recommend candidates — we process EU employee data at scale..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors resize-none leading-relaxed"

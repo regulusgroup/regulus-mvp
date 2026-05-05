@@ -50,9 +50,10 @@ function ReportIcon() {
 // ─── Waitlist form ─────────────────────────────────────────────────────────────
 
 const ROLES = [
-  "Fintech Founder / CEO",
+  "Founder / CEO",
   "CTO / Engineering Lead",
   "Compliance Officer",
+  "Legal Counsel",
   "Investor / VC",
   "Advisor",
   "Other",
@@ -185,12 +186,12 @@ export default function Home() {
             className="text-5xl md:text-7xl leading-[1.05] tracking-tight text-[#b5b99f]"
             style={{ fontFamily: "MomoTrust, serif" }}
           >
-            EU fintech compliance,{" "}
-            <span className="text-[#3f4e40]">finally under control.</span>
+            EU compliance for companies{" "}
+            <span className="text-[#3f4e40]">that use AI.</span>
           </h1>
 
           <p className="text-base md:text-lg text-[#7a7f6a] max-w-lg leading-relaxed">
-            MiCA. PSD2. DORA. GDPR. AML. One AI dashboard tracks every regulation that applies to your business — so you can stop worrying and start building.
+            GDPR. EU AI Act. NIS2. DORA. AML. If you use AI and hold client data in the EU, you have obligations. Regulus maps them, tracks them, and tells you exactly what to do next.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -221,19 +222,19 @@ export default function Home() {
               className="text-3xl md:text-4xl text-[#b5b99f]"
               style={{ fontFamily: "MomoTrust, serif" }}
             >
-              Compliance is killing European fintechs.
+              EU regulation just got a lot more complicated.
             </h2>
             <p className="text-[#7a7f6a] max-w-md leading-relaxed text-sm">
-              Not because founders don&apos;t care — but because the regulatory surface is fragmented, expensive, and constantly moving.
+              The EU AI Act, GDPR, NIS2, and sector-specific rules now overlap for any company using AI with client data — regardless of industry.
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#2e3329] rounded-xl overflow-hidden w-full">
             {[
-              { stat: "73%", label: "of EU fintechs fail partly due to compliance failures" },
-              { stat: "5+",  label: "Excel files to track obligations across frameworks" },
-              { stat: "50+", label: "pages of regulatory reading required per week" },
-              { stat: "€50K", label: "per year spent on compliance consultants on average" },
+              { stat: "3+",   label: "overlapping EU frameworks apply to any AI product handling personal data" },
+              { stat: "2026", label: "EU AI Act high-risk obligations apply — many companies still unprepared" },
+              { stat: "€35M", label: "maximum fine for violating the EU AI Act prohibited practices" },
+              { stat: "€50K", label: "per year spent on compliance consultants by early-stage companies on average" },
             ].map(({ stat, label }) => (
               <div key={stat} className="bg-[#1a1f18] flex flex-col items-center gap-2 px-6 py-8 text-center">
                 <span
@@ -320,16 +321,16 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
             {[
               {
-                title: "Fintech Founders",
-                description: "Stop losing sleep over compliance. Know your obligations, track your progress, and never miss a deadline that could sink your company.",
+                title: "Founders building with AI",
+                description: "If your product uses AI and holds EU client data, you have overlapping GDPR, EU AI Act, and NIS2 obligations. Know exactly where you stand.",
               },
               {
                 title: "Investors & VCs",
-                description: "Due diligence in minutes, not weeks. Compliance posture is often the biggest hidden risk in early-stage fintech — now it's legible.",
+                description: "Compliance risk is the most common hidden liability in early-stage EU companies. Get a clear posture read in minutes, not weeks.",
               },
               {
-                title: "Compliance Teams",
-                description: "Stop maintaining spreadsheets. Get a single source of truth for your entire regulatory stack across all EU frameworks.",
+                title: "Compliance & Legal Teams",
+                description: "One source of truth across all EU frameworks — GDPR, AI Act, NIS2, sector-specific rules. Stop maintaining spreadsheets.",
               },
             ].map(({ title, description }) => (
               <div key={title} className="rounded-xl border border-[#2e3329] bg-[#222720] p-6 flex flex-col gap-3">
@@ -358,13 +359,13 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-5 flex-1 text-sm text-[#7a7f6a] leading-relaxed">
             <p>
-              Europe doesn&apos;t have one regulatory framework for fintech — it has dozens, layered across the EU and each member state. MiCA for crypto. PSD2 for payments. DORA for operational resilience. GDPR for data. AML for financial crime.
+              The moment you use AI to make decisions about people — or store EU personal data at scale — you are subject to GDPR, the EU AI Act, and likely NIS2. If you&apos;re in fintech, healthcare, or HR, add sector-specific rules on top.
             </p>
             <p>
-              No single tool maps all of them. No consultant covers all of them affordably. That&apos;s the gap — and it only grows as regulation accelerates.
+              These frameworks overlap, contradict, and evolve on different timelines. No single consultant covers all of them affordably. No existing tool maps them to your specific stack, country, and business model.
             </p>
             <p>
-              Regulus is built specifically for this complexity. EU-first, regulation-native, and designed to stay current as the rules change.
+              Regulus is built for this complexity. EU-first, regulation-native, and grounded in primary sources — not legal approximations.
             </p>
           </div>
         </div>
@@ -384,7 +385,7 @@ export default function Home() {
               Get in early.<br />Help shape what we build.
             </h2>
             <p className="text-[#7a7f6a] text-sm leading-relaxed">
-              We&apos;re onboarding a small group of design partners — fintech founders, compliance leads, and investors who want to influence the roadmap and get first access.
+              We&apos;re onboarding a small group of design partners — founders, compliance leads, and investors who want to influence the roadmap and get first access.
             </p>
           </div>
 

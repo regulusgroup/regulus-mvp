@@ -9,13 +9,13 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://regulus.eu"),
-  title: "Regulus — AI Compliance for EU Fintechs",
+  title: "Regulus — EU Compliance for AI Companies",
   description:
-    "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on. Join the waitlist.",
+    "If you use AI and hold EU client data, you have overlapping GDPR, EU AI Act, and NIS2 obligations. Regulus maps them, tracks them, and tells you exactly what to do.",
   openGraph: {
-    title: "Regulus — AI Compliance for EU Fintechs",
+    title: "Regulus — EU Compliance for AI Companies",
     description:
-      "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on.",
+      "GDPR. EU AI Act. NIS2. DORA. AML. One AI dashboard maps every regulation that applies to your business — tracked, simplified, and acted on.",
     siteName: "Regulus",
     type: "website",
     url: "https://regulus.eu",
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Regulus — AI Compliance for EU Fintechs",
+    title: "Regulus — EU Compliance for AI Companies",
     description:
-      "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on.",
+      "GDPR. EU AI Act. NIS2. DORA. AML. One AI dashboard maps every regulation that applies to your business — tracked, simplified, and acted on.",
     images: ["/og-image.jpg"],
   },
 };

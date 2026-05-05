@@ -1,4 +1,4 @@
-# EU Fintech Regulations — Reference Knowledge Base
+# EU Regulations — Reference Knowledge Base for AI & Data Companies
 
 > Last updated: 2026-05-04 (verification pass completed same day — 43 of 47 original markers resolved)
 > Sources: EUR-Lex, European Commission (finance.ec.europa.eu, digital-strategy.ec.europa.eu), EBA, ESMA, EIOPA, EDPB, AMLA, Council of the EU, European Parliament; secondary cite mirrors (lewik, lexparency, better-regulation, AI Act Service Desk, KPMG/DLA Piper analyses) used where EUR-Lex consolidated-text endpoints returned empty bodies.
@@ -12,7 +12,8 @@
 4. MiCA — Regulation (EU) 2023/1114
 5. DORA — Regulation (EU) 2022/2554 + Directive (EU) 2022/2556
 6. EU AI Act — Regulation (EU) 2024/1689
-7. Applicability matrix by Regulus business type
+7. NIS2 — Directive (EU) 2022/2555
+8. Applicability matrix by business type (expanded — fintech + AI/data companies)
 
 ---
 
@@ -408,26 +409,171 @@
 
 ---
 
-## 7. Applicability matrix by Regulus business type
+## 7. NIS2
 
-| Business type | GDPR | AML | PSD2/3 | MiCA | DORA | AI Act | Why it applies (one-line) |
+### 7.1 Identity & status
+- **Full name**: Directive on measures for a high common level of cybersecurity across the Union
+- **Instrument**: Directive (EU) 2022/2555
+- **Replaces**: NIS1 Directive (EU) 2016/1148
+- **Entry into force**: 16 January 2023
+- **Transposition deadline**: 17 October 2024 (all EU Member States)
+- **EUR-Lex**: https://eur-lex.europa.eu/eli/dir/2022/2555/oj
+- **Source**: [source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+### 7.2 Scope — who it applies to
+NIS2 covers two tiers of entities:
+
+**Essential entities (Annex I)** — subject to stricter ex-ante supervision:
+- Energy, transport, banking, financial market infrastructure, health, drinking water, wastewater, digital infrastructure (IXPs, DNS, TLD registries, cloud providers, data centres, CDNs, trust service providers, public electronic comms networks), ICT service management (B2B), public administration, space.
+
+**Important entities (Annex II)** — subject to ex-post supervision:
+- Postal/courier, waste management, chemicals, food, manufacturing (medical devices, computers, motor vehicles), digital providers (online marketplaces, online search engines, social networks), research organisations.
+
+**Size threshold** (Art. 2): Applies to **medium and large enterprises** in the above sectors — i.e. ≥50 employees OR ≥€10M annual turnover. Micro and small enterprises are excluded *unless* they are sole providers of a critical service in a Member State, or their disruption could have significant impact.
+[source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+**Key for AI/data companies**: Cloud service providers, data centre services, managed security service providers, and online marketplaces are in scope regardless of size if they are large or medium. SaaS companies providing ICT services B2B to in-scope sectors may fall into scope as "ICT service management" or as managed service providers.
+
+### 7.3 Key obligations
+1. **Cybersecurity risk management measures** (Art. 21): Must implement policies on: risk analysis and information system security; incident handling; business continuity and crisis management; supply chain security (including third-party risk); security in network and information systems acquisition, development and maintenance; policies and procedures to assess effectiveness of cybersecurity risk-management measures; basic cyber hygiene practices and cybersecurity training; human resources security, access control and asset management; use of multi-factor authentication or continuous authentication solutions; cryptography and, where appropriate, encryption.
+[source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+2. **Incident notification** (Art. 23): Three-tier timeline:
+   - **Early warning**: within 24 hours of becoming aware of significant incident
+   - **Incident notification**: within 72 hours (including initial assessment of severity, indicators of compromise)
+   - **Final report**: within 1 month of incident notification
+   Notifications go to the national CSIRT or competent authority.
+   [source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+3. **Significant incident definition** (Art. 23(3)): An incident is significant if it has caused or is capable of causing severe operational disruption or financial loss to the entity, OR has affected or is capable of affecting other natural or legal persons by causing considerable material or non-material damage.
+
+4. **Management body accountability** (Art. 20): Management bodies of essential and important entities must approve the entity's cybersecurity risk-management measures and oversee their implementation. Management body members are required to follow training. They can be held personally liable for infringements.
+[source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+5. **Supply chain security** (Art. 21(2)(d)): Must assess and manage cybersecurity risks in supply chains, including security-related aspects concerning the relationships between each entity and its direct suppliers or service providers.
+
+6. **Registration**: Essential and important entities must register with their national competent authority. ENISA maintains a European register for certain cross-border entities (DNS, TLD, cloud, data centres, CDN, managed security, managed ICT, online marketplaces, online search engines, social networking platforms).
+
+### 7.4 Thresholds & amounts
+| Item | Value | Source |
+|---|---|---|
+| Size threshold (general) | ≥50 employees OR ≥€10M turnover | Art. 2 |
+| Large entity | ≥250 employees OR ≥€50M turnover AND ≥€43M balance sheet | Annex to Recommendation 2003/361/EC |
+| Early warning deadline | 24 hours from awareness | Art. 23(1)(a) |
+| Incident notification | 72 hours from awareness | Art. 23(1)(b) |
+| Final report | 1 month from incident notification | Art. 23(1)(c) |
+| Fine — essential entities | Up to €10,000,000 or 2% of global annual turnover (whichever higher) | Art. 34(4) |
+| Fine — important entities | Up to €7,000,000 or 1.4% of global annual turnover (whichever higher) | Art. 34(5) |
+
+[source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+
+### 7.5 Supervision & reporting
+- **Essential entities**: Subject to proactive (ex-ante) supervision including on-site inspections, security audits, and targeted audits.
+- **Important entities**: Subject to reactive (ex-post) supervision — supervisory measures triggered by evidence of non-compliance.
+- **National competent authorities**: Designated per Member State (same as NIS1 but now more sector-specific; often the telecoms/digital regulator or a dedicated cybersecurity agency).
+- **ENISA** (EU Agency for Cybersecurity): Maintains register of cross-border entities, coordinates EU-level incident reporting, publishes threat landscape reports.
+- **CSIRTs**: Each Member State must maintain a CSIRT. Companies notify their national CSIRT of significant incidents.
+
+### 7.6 Penalties
+- Essential entities: Max €10M or 2% of total global annual turnover (Art. 34(4)) [source: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555]
+- Important entities: Max €7M or 1.4% of total global annual turnover (Art. 34(5))
+- Management bodies: Can be temporarily prohibited from exercising managerial functions in cases of persistent or serious infringement (Art. 32(6) for essential entities)
+- Note: Fines are imposed by national supervisory authorities; enforcement approaches vary by Member State.
+
+### 7.7 Country implementation notes
+| Country | NCA | CSIRT | Notes |
+|---|---|---|---|
+| Germany | BSI (Federal Office for Information Security) | BSI-CERT | Germany's BSIG amended to transpose NIS2; BSI has broad enforcement powers |
+| France | ANSSI | CERT-FR | French transposition law (NIS2 transposition) enacted 2024; ANSSI coordinates national cybersecurity strategy |
+| Netherlands | NCSC-NL (Rijksoverheid) | NCSC-NL | Cybersecurity Act enacted for NIS2 transposition |
+| Ireland | NCSC Ireland | CSIRT-IE | National Cyber Security Centre; CBI coordinates for financial sector |
+| Estonia | RIA (Information System Authority) | CERT-EE | Estonia has strong cyber capacity; RIA is NIS2 competent authority |
+| Lithuania | NKSC (National Cyber Security Centre) | CERT-LT | NKSC under MoD; Bank of Lithuania coordinates for financial sector |
+| Malta | MITA / MCA | MITA | Malta Information Technology Agency; MCA is digital regulator |
+
+### 7.8 Key pitfalls for AI/SaaS companies
+1. **"We're too small"**: Companies often assume NIS2 doesn't apply. If you have ≥50 employees OR ≥€10M revenue and provide cloud services, managed ICT services, or operate in an Annex I/II sector, you are in scope.
+2. **Supply chain obligations**: Even if your company is not in scope, if you supply services to an in-scope entity, that entity must contractually impose cybersecurity requirements on you. Expect customers to demand NIS2 compliance evidence.
+3. **Management accountability**: NIS2 explicitly holds board members personally liable — this is new vs NIS1. Boards need to approve cybersecurity policies and take training.
+4. **24-hour early warning**: Faster than GDPR's 72-hour breach notification. Many companies conflate the two; NIS2 incident timelines apply to operational disruption even without a personal data breach.
+5. **"We use a cloud provider so we're covered"**: Cloud providers (AWS, Azure, GCP) are separately in scope as essential entities. But using them doesn't discharge your own NIS2 obligations — you still must manage ICT third-party risk.
+
+### 7.9 Sources
+- https://eur-lex.europa.eu/eli/dir/2022/2555/oj
+- https://www.enisa.europa.eu/topics/cybersecurity-policy/nis-directive-new
+- https://digital-strategy.ec.europa.eu/en/policies/nis2-directive
+- https://www.bsi.bund.de/EN/Topics/cybersecurity-strategy/NIS2/nis2_node.html
+- https://www.anssi.fr/en/nis2
+
+---
+
+## 8. Applicability matrix by business type (expanded)
+
+### AI & Software companies
+
+| Business type | GDPR | AI Act | NIS2 | AML | DORA | Notes |
+|---|---|---|---|---|---|---|
+| **B2B SaaS with AI** | Yes | If AI affects individuals | If ≥50 staff or ≥€10M | No (unless financial) | If serving financial clients | GDPR as data processor; AI Act if AI makes decisions about users; NIS2 if medium/large or serving critical sectors. |
+| **Developer Tools & APIs** | Yes (processor) | Conditional | If digital infra provider | No | No | Likely GDPR processor; if you provide APIs to NIS2-covered sectors, supply-chain clause applies. |
+| **Data & Analytics** | Yes | If profiling individuals | If medium/large | No | No | GDPR Art. 22 if automated profiling leads to decisions; DPIA required for large-scale profiling. |
+| **AI Agents / Automation** | Yes | Likely yes | If medium/large | No | No | High risk if agents make decisions about people (hiring, credit, health). Transparency obligations Art. 50. |
+
+### Healthcare & Life Sciences
+
+| Business type | GDPR | AI Act | NIS2 | AML | Notes |
+|---|---|---|---|---|---|
+| **Digital Health / Telemedicine** | Yes — Art. 9 (health data) | If diagnostic or treatment AI | Yes — health is Annex I essential sector | No | Health data = special category; DPIA mandatory; AI medical decision support = high-risk Annex III. |
+| **Medical Devices (SaMD)** | Yes — Art. 9 | Yes — Annex III high-risk | Yes | No | MDR (Medical Device Regulation) also applies — out of scope here. AI diagnostic tools are high-risk. |
+| **Health & Wellness Apps** | Yes — Art. 9 | Conditional | If medium/large | No | Even wellness apps processing inferred health data trigger Art. 9 GDPR. Explicit consent required. |
+| **Pharma & Biotech Tech** | Yes — research exemptions apply | Conditional | Yes | No | GDPR research exemption (Art. 89) may ease consent requirements; AI for drug discovery generally not high-risk. |
+
+### HR & Workforce
+
+| Business type | GDPR | AI Act | NIS2 | AML | Notes |
+|---|---|---|---|---|---|
+| **Recruitment & ATS** | Yes — employee/candidate data | Yes — Annex III high-risk | If medium/large | No | AI for CV screening, scoring candidates = Annex III §4 high-risk. Mandatory conformity assessment. Human review right. |
+| **HR Management** | Yes — employee special categories | Yes if AI decisions | If medium/large | No | Performance AI, absence monitoring, salary benchmarking AI may be high-risk. Employee data: union membership, health = Art. 9. |
+| **Workforce Analytics** | Yes | Yes if monitoring individuals | If medium/large | No | Continuous monitoring tools trigger GDPR Art. 35 DPIA. AI Act transparency: inform workers if AI monitors them (Art. 26). |
+
+### Commerce & Marketing
+
+| Business type | GDPR | AI Act | NIS2 | AML | Notes |
+|---|---|---|---|---|---|
+| **E-commerce & Retail** | Yes | Conditional | If online marketplace | No | Online marketplaces ≥medium size = NIS2 important entity. AI recommendation engines: limited risk unless decisions affect access to services. |
+| **MarTech & AdTech** | Yes — profiling + cookie rules | Conditional | If medium/large | No | GDPR consent for profiling. ePrivacy Directive (cookies) applies. AI targeting: generally limited-risk but transparency required. |
+| **CRM & Customer Success** | Yes | Conditional | No | No | Primarily a GDPR data-processor; DPIA if large-scale profiling. AI churn-scoring or credit-linked decisions may be high-risk. |
+
+### Professional Services
+
+| Business type | GDPR | AI Act | NIS2 | AML | Notes |
+|---|---|---|---|---|---|
+| **Legal Tech** | Yes — legal privilege + personal data | If AI makes legal decisions | If medium/large | Indirect | AI contract analysis, legal prediction tools: check if they qualify as high-risk (access to justice, administration of justice — Annex III §8). |
+| **EdTech** | Yes — often children's data | Yes — Annex III if student evaluation | No | No | AI that evaluates students = Annex III §3 high-risk. Children's data (under 16): explicit parental consent required (GDPR Art. 8). |
+| **PropTech (non-finance)** | Yes | Conditional | No | No | Smart building data (occupancy, CCTV) = GDPR. AI rent pricing or tenant scoring may be high-risk. |
+| **GovTech / Regtech** | Yes | Often high-risk | Yes — public admin is Annex I | No | Government-facing tools: GDPR as processor. AI for public admin decisions = Annex III §5. NIS2: public administration is essential sector. |
+
+### Financial Services (unchanged from v1)
+
+| Business type | GDPR | AML | PSD2/3 | MiCA | DORA | AI Act | Notes |
 |---|---|---|---|---|---|---|---|
-| **Neobank** | Yes | Yes | Yes | If offers crypto | Yes | If credit scoring AI | Holds funds → PSD2/credit-institution licensing; processes personal data → GDPR; obliged entity → AML; financial entity → DORA. |
-| **Embedded Finance** | Yes | Yes | Yes | Conditional | Yes | Conditional | Provides regulated payment/lending rails to non-bank brands; primary licence-holder triggers PSD2/AML; DORA applies to the financial-entity layer. |
-| **Open Banking** | Yes | Yes (light) | Yes | No | Yes | Conditional | AISP/PISP licensed under PSD2; processes account-information → GDPR Art. 9 risks; DORA for ICT resilience. |
-| **Payments App** | Yes | Yes | Yes | If stablecoin | Yes | Limited | PI/EMI under PSD2/EMD2; SCA + open banking; AML obliged entity; DORA financial entity. |
-| **B2B Finance** | Yes | Yes | Often | Conditional | Often | Conditional | Invoice finance, treasury, virtual cards typically operate under PSD2 EMI/PI; AML obliged entity; DORA where licensed. |
-| **Payroll & HR** | Yes | Limited | If holding funds | No | Conditional | If using AI for hiring/credit | GDPR-heavy (special categories incl. health, union membership); employment-AI is Annex III high-risk; PSD2 if money is held. |
-| **Consumer Lending (BNPL)** | Yes | Yes | If payment account | No | Yes (if licensed credit institution / CCD2 entity) | Yes — credit scoring | GDPR Art. 22 + AI Act Annex III 5(b) for credit decisioning; AML obliged entity; CCD2 layer outside this knowledge base. |
-| **PropTech Finance** | Yes | Yes | If payment service | No | If financial entity | Conditional | AML real-estate scope; mortgage brokering / credit decisioning may be high-risk AI. |
-| **Wealthtech** | Yes | Yes | If payment service | If crypto | Yes | Conditional | MiFID II/IFR layer outside this scope; DORA covers investment firms; AML obliged entity. |
-| **Crypto & DeFi** | Yes | Yes (CASP) | Conditional (EMT) | Yes | Yes (CASP financial entity) | Limited | Direct MiCA scope; CASP is AMLR obliged entity; Travel Rule; DORA covers CASPs. |
-| **Insurtech** | Yes (Art. 9 health) | Limited | If payment service | No | Yes (insurance undertakings/intermediaries) | Yes — life/health pricing | Annex III 5(c) high-risk for life/health pricing AI; DORA scope per Art. 2; IDD/Solvency II layer outside this knowledge base. |
-| **Regtech** | Yes (processor) | Indirect (provides tooling) | Indirect | Indirect | Often (as ICT TPP) | Conditional (AML AI / KYC biometrics) | Usually a processor under GDPR; may be ICT third-party provider under DORA, with possible "critical TPP" oversight. |
+| **Neobank** | Yes | Yes | Yes | If offers crypto | Yes | If credit scoring AI | Holds funds → PSD2; processes personal data → GDPR; obliged entity → AML; financial entity → DORA. |
+| **Payments App** | Yes | Yes | Yes | If stablecoin | Yes | Limited | PI/EMI under PSD2/EMD2; SCA; AML obliged entity; DORA financial entity. |
+| **Consumer Lending (BNPL)** | Yes | Yes | Conditional | No | Yes | Yes — credit scoring | AI Act Annex III §5(b) for credit decisioning; AML obliged entity. |
+| **Crypto & DeFi** | Yes | Yes (CASP) | Conditional (EMT) | Yes | Yes | Limited | MiCA scope; Travel Rule; DORA covers CASPs. |
+| **Wealthtech** | Yes | Yes | Conditional | If crypto | Yes | Conditional | MiFID II layer (out of scope here); DORA covers investment firms. |
+| **Embedded Finance** | Yes | Yes | Yes | Conditional | Yes | Conditional | Primary licence-holder triggers PSD2/AML; DORA applies to financial-entity layer. |
+| **Open Banking** | Yes | Light | Yes | No | Yes | Conditional | AISP/PISP under PSD2; DORA for ICT resilience. |
+| **B2B Finance** | Yes | Yes | Often | Conditional | Often | Conditional | Treasury, virtual cards typically under PSD2 EMI/PI; AML obliged entity. |
+| **Insurtech** | Yes (Art. 9 health) | Limited | Conditional | No | Yes | Yes — life/health pricing | Annex III §5(c) high-risk for life/health pricing AI; DORA per Art. 2. |
+| **Regtech** | Yes (processor) | Indirect | Indirect | Indirect | Often (ICT TPP) | Conditional | ICT third-party provider under DORA; AML AI / KYC biometrics may be high-risk. |
 
-Notes on the matrix:
-- "Conditional" means applicability turns on whether the firm holds an EU licence, processes funds, or uses in-scope AI. Use the regulation-specific scope tests above.
-- This matrix is non-exhaustive; sector-specific regimes (MiFID II, IDD, Solvency II, CCD2, EMD2, Crowdfunding Regulation) apply on top and are out of scope of this document.
+---
+
+**Notes:**
+- "Conditional" = applicability depends on size, licence held, or specific AI use case.
+- NIS2 size threshold: ≥50 employees OR ≥€10M annual turnover (medium+ enterprise).
+- AI Act high-risk applies to the *use case*, not the company type — a wellness app using AI for triage is high-risk; the same app using AI for notifications is not.
+- Sector-specific regimes not covered here: MiFID II, IDD, Solvency II, CCD2, MDR, DSA, DMA, ePrivacy Directive.
 
 ---
 
