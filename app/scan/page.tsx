@@ -4,13 +4,69 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+// ─── Category icons ───────────────────────────────────────────────────────────
+
+const IconAI = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <circle cx="7.5" cy="7.5" r="2" stroke="currentColor" strokeWidth="1.1"/>
+    <circle cx="1.5" cy="3.5" r="1" stroke="currentColor" strokeWidth="1.1"/>
+    <circle cx="13.5" cy="3.5" r="1" stroke="currentColor" strokeWidth="1.1"/>
+    <circle cx="1.5" cy="11.5" r="1" stroke="currentColor" strokeWidth="1.1"/>
+    <circle cx="13.5" cy="11.5" r="1" stroke="currentColor" strokeWidth="1.1"/>
+    <line x1="2.5" y1="4" x2="5.8" y2="6.4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+    <line x1="12.5" y1="4" x2="9.2" y2="6.4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+    <line x1="2.5" y1="11" x2="5.8" y2="8.6" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+    <line x1="12.5" y1="11" x2="9.2" y2="8.6" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconHealth = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <circle cx="7.5" cy="7.5" r="6" stroke="currentColor" strokeWidth="1.1"/>
+    <line x1="7.5" y1="4.5" x2="7.5" y2="10.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+    <line x1="4.5" y1="7.5" x2="10.5" y2="7.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconHR = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <circle cx="7.5" cy="4.5" r="2.3" stroke="currentColor" strokeWidth="1.1"/>
+    <path d="M2.5 13.5c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconCommerce = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <path d="M8 2h4.5a.5.5 0 01.5.5V7a.5.5 0 01-.146.354l-5.5 5.5a.5.5 0 01-.708 0l-4.5-4.5a.5.5 0 010-.708l5.5-5.5A.5.5 0 018 2z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round"/>
+    <circle cx="11" cy="5" r="0.8" fill="currentColor"/>
+  </svg>
+);
+
+const IconProfessional = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <rect x="1.5" y="5.5" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1.1"/>
+    <path d="M5.5 5.5V4.5a2 2 0 014 0v1" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+    <line x1="1.5" y1="9.5" x2="13.5" y2="9.5" stroke="currentColor" strokeWidth="1.1" opacity="0.4"/>
+  </svg>
+);
+
+const IconFinance = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <line x1="1" y1="13.5" x2="14" y2="13.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" opacity="0.5"/>
+    <rect x="2" y="7" width="2" height="6.5" rx="0.5" stroke="currentColor" strokeWidth="1.1"/>
+    <rect x="6.5" y="7" width="2" height="6.5" rx="0.5" stroke="currentColor" strokeWidth="1.1"/>
+    <rect x="11" y="7" width="2" height="6.5" rx="0.5" stroke="currentColor" strokeWidth="1.1"/>
+    <path d="M1.5 7L7.5 3l6 4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BUSINESS_CATEGORIES = [
   {
     id: "ai_saas",
     label: "AI & Software",
-    icon: "🤖",
+    icon: <IconAI />,
     types: [
       { id: "saas_ai",    label: "B2B SaaS with AI",        desc: "SaaS product with AI features that processes user data" },
       { id: "dev_tools",  label: "Developer Tools & APIs",  desc: "APIs, SDKs, platforms used by other developers" },
@@ -21,7 +77,7 @@ const BUSINESS_CATEGORIES = [
   {
     id: "health",
     label: "Healthcare & Life Sciences",
-    icon: "🏥",
+    icon: <IconHealth />,
     types: [
       { id: "digital_health", label: "Digital Health / Telemedicine", desc: "Patient apps, remote consultations, health monitoring" },
       { id: "medtech",        label: "Medical Devices (SaMD)",        desc: "Software as a Medical Device — diagnostics, decision support" },
@@ -32,7 +88,7 @@ const BUSINESS_CATEGORIES = [
   {
     id: "hr_people",
     label: "HR & Workforce",
-    icon: "👥",
+    icon: <IconHR />,
     types: [
       { id: "recruitment",   label: "Recruitment & ATS",        desc: "Applicant tracking, CV screening, candidate scoring" },
       { id: "hr_mgmt",       label: "HR Management",            desc: "Employee records, performance management, payroll" },
@@ -42,7 +98,7 @@ const BUSINESS_CATEGORIES = [
   {
     id: "commerce",
     label: "Commerce & Marketing",
-    icon: "🛍️",
+    icon: <IconCommerce />,
     types: [
       { id: "ecommerce",    label: "E-commerce & Retail",    desc: "Online stores, marketplaces, personalised shopping" },
       { id: "martech",      label: "MarTech & AdTech",       desc: "Ad targeting, email automation, customer segmentation" },
@@ -52,7 +108,7 @@ const BUSINESS_CATEGORIES = [
   {
     id: "professional",
     label: "Professional Services",
-    icon: "⚖️",
+    icon: <IconProfessional />,
     types: [
       { id: "legaltech",   label: "Legal Tech",        desc: "Contract analysis, legal research, document automation" },
       { id: "edtech",      label: "EdTech",            desc: "E-learning, student profiling, adaptive learning" },
@@ -63,7 +119,7 @@ const BUSINESS_CATEGORIES = [
   {
     id: "financial",
     label: "Financial Services",
-    icon: "🏦",
+    icon: <IconFinance />,
     types: [
       { id: "neobank",     label: "Neobank",            desc: "Digital accounts, cards, banking services" },
       { id: "payments",    label: "Payments App",       desc: "Wallets, transfers, payment processing" },
@@ -594,7 +650,7 @@ export default function ScanPage() {
                       style={{ background: isOpen || hasSelection ? "#222720" : "transparent" }}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-base">{cat.icon}</span>
+                        <span className="text-[#7a7f6a] flex items-center">{cat.icon}</span>
                         <div className="flex flex-col items-start gap-0.5">
                           <span className="text-sm font-medium text-[#b5b99f]">{cat.label}</span>
                           {hasSelection && !isOpen && (
