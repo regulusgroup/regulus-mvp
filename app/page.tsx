@@ -102,7 +102,7 @@ export default function Home() {
             </Link>
             <Link
               href="/waitlist"
-              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm transition-all hover:border-[#3f4e40] hover:text-[#b5b99f]"
+              className="h-12 px-8 rounded-lg border border-[#3f4e40]/50 text-[#b5b99f] font-medium text-sm transition-all hover:border-[#3f4e40] hover:bg-[#222720] flex items-center justify-center"
             >
               Join waitlist
             </Link>
@@ -291,13 +291,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <Link
               href="/waitlist"
-              className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm hover:opacity-90 transition-all"
+              className="h-12 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] font-medium text-sm hover:opacity-90 transition-all flex items-center justify-center"
             >
               Join the waitlist
             </Link>
             <Link
               href="/scan"
-              className="h-12 px-8 rounded-lg border border-[#2e3329] text-[#7a7f6a] font-medium text-sm hover:border-[#3f4e40] hover:text-[#b5b99f] transition-all"
+              className="h-12 px-8 rounded-lg border border-[#3f4e40]/50 text-[#b5b99f] font-medium text-sm hover:border-[#3f4e40] hover:bg-[#222720] transition-all flex items-center justify-center"
             >
               Try the snapshot first
             </Link>
