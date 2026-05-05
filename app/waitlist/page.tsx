@@ -50,7 +50,7 @@ export default function WaitlistPage() {
         </Link>
         <Link
           href="/scan"
-          className="h-8 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] transition-colors"
+          className="h-8 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] transition-colors flex items-center"
         >
           Try the snapshot →
         </Link>
@@ -77,7 +77,7 @@ export default function WaitlistPage() {
               </div>
               <Link
                 href="/scan"
-                className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all"
+                className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
               >
                 Get your compliance snapshot →
               </Link>
