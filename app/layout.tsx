@@ -8,6 +8,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://regulus.eu"),
   title: "Regulus — AI Compliance for EU Fintechs",
   description:
     "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on. Join the waitlist.",
@@ -17,12 +18,22 @@ export const metadata: Metadata = {
       "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on.",
     siteName: "Regulus",
     type: "website",
+    url: "https://regulus.eu",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Regulus — AI Compliance for EU Fintechs",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Regulus — AI Compliance for EU Fintechs",
     description:
       "One AI dashboard for all EU fintech regulations. MiCA, PSD2, DORA, GDPR, AML — tracked, simplified, and acted on.",
+    images: ["/og-image.jpg"],
   },
 };
 
