@@ -257,6 +257,137 @@ function Chip({
   );
 }
 
+// ─── Visualisation components ────────────────────────────────────────────────
+
+function RiskGauge({ score, level, color }: { score: number; level: string; color: string }) {
+  const r = 64, cx = 100, cy = 100;
+  const C = 2 * Math.PI * r;
+  const half = C / 2;
+  const filled = (score / 10) * half;
+
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: 200, height: 108 }}>
+      <svg width="200" height="108" viewBox="0 0 200 108">
+        {/* Background arc (top semicircle) */}
+        <circle
+          cx={cx} cy={cy} r={r}
+          fill="none" stroke="#2e3329" strokeWidth="10" strokeLinecap="round"
+          strokeDasharray={`${half} ${C}`}
+          transform={`rotate(180 ${cx} ${cy})`}
+        />
+        {/* Score arc */}
+        {filled > 0.1 && (
+          <circle
+            cx={cx} cy={cy} r={r}
+            fill="none" stroke={color} strokeWidth="10" strokeLinecap="round"
+            strokeDasharray={`${filled} ${C}`}
+            transform={`rotate(180 ${cx} ${cy})`}
+          />
+        )}
+      </svg>
+      {/* Overlay text */}
+      <div className="absolute flex flex-col items-center" style={{ top: 50 }}>
+        <span className="text-3xl font-medium" style={{ color, fontFamily: "MomoTrust, serif", lineHeight: 1 }}>
+          {score}
+        </span>
+        <span className="text-[10px] text-[#7a7f6a] mt-1 uppercase tracking-widest">{level} risk</span>
+      </div>
+    </div>
+  );
+}
+
+function PriorityBars({ regulations }: { regulations: RegulationResult[] }) {
+  const applies = regulations.filter(r => r.applies);
+  const total = applies.length;
+  if (total === 0) return null;
+
+  const bars = [
+    { key: "urgent",  label: "Urgent",      count: applies.filter(r => r.priority === "urgent").length,  color: "#c97b7b" },
+    { key: "quarter", label: "This quarter", count: applies.filter(r => r.priority === "quarter").length, color: "#c9a87b" },
+    { key: "year",    label: "This year",    count: applies.filter(r => r.priority === "year").length,    color: "#b5b99f" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-2.5 p-4 rounded-lg border border-[#2e3329] bg-[#1a1f18]">
+      <p className="text-[10px] text-[#3f4e40] uppercase tracking-widest mb-0.5">
+        {total} regulation{total !== 1 ? "s" : ""} apply to your setup
+      </p>
+      {bars.map(({ key, label, count, color }) => (
+        <div key={key} className="flex items-center gap-3">
+          <span className="text-[11px] text-[#7a7f6a] w-24 shrink-0">{label}</span>
+          <div className="flex-1 h-1.5 rounded-full bg-[#2e3329] overflow-hidden">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${(count / total) * 100}%`, background: color, minWidth: count > 0 ? 6 : 0 }}
+            />
+          </div>
+          <span className="text-[11px] font-medium w-3 text-right shrink-0" style={{ color: count > 0 ? color : "#4a4f3e" }}>
+            {count}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DonutChart({ regulations }: { regulations: RegulationResult[] }) {
+  const applies = regulations.filter(r => r.applies);
+  const total = applies.length;
+  if (total === 0) return null;
+
+  const r = 36, cx = 50, cy = 50;
+  const C = 2 * Math.PI * r;
+
+  const segments = [
+    { label: "Urgent",       count: applies.filter(s => s.priority === "urgent").length,  color: "#c97b7b" },
+    { label: "This quarter", count: applies.filter(s => s.priority === "quarter").length, color: "#c9a87b" },
+    { label: "This year",    count: applies.filter(s => s.priority === "year").length,    color: "#b5b99f" },
+  ].filter(s => s.count > 0);
+
+  let cumulative = 0;
+
+  return (
+    <div className="flex items-center gap-5 p-4 rounded-lg border border-[#2e3329] bg-[#1a1f18]">
+      <div className="relative shrink-0" style={{ width: 100, height: 100 }}>
+        <svg width="100" height="100" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#2e3329" strokeWidth="14" />
+          {segments.map(({ label, count, color }) => {
+            const dash = (count / total) * C;
+            const offset = -cumulative;
+            cumulative += dash;
+            return (
+              <circle
+                key={label} cx={cx} cy={cy} r={r}
+                fill="none" stroke={color} strokeWidth="14"
+                strokeDasharray={`${dash} ${C}`}
+                strokeDashoffset={offset}
+              />
+            );
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="text-xl font-medium text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif", lineHeight: 1 }}>
+            {total}
+          </span>
+          <span className="text-[9px] text-[#7a7f6a] mt-0.5">regs</span>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 flex-1">
+        {segments.map(({ label, count, color }) => (
+          <div key={label} className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+            <span className="text-xs text-[#7a7f6a] flex-1">{label}</span>
+            <span className="text-xs font-medium" style={{ color }}>{count}</span>
+          </div>
+        ))}
+        <p className="text-[10px] text-[#4a4f3e] pt-1 border-t border-[#2e3329] mt-1">
+          out of {regulations.length} checked
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ─── Loading skeleton ─────────────────────────────────────────────────────────
 
 function Skeleton() {
@@ -326,14 +457,8 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
         {/* ── Slide 0: Overview ── */}
         {slide === 0 && (
           <div className="flex flex-col gap-5 flex-1">
-            <div
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border w-fit"
-              style={{ borderColor: riskColor + "40", background: riskColor + "12" }}
-            >
-              <div className="w-2 h-2 rounded-full" style={{ background: riskColor }} />
-              <span className="text-sm font-medium" style={{ color: riskColor }}>
-                {report.riskLevel} risk — {report.riskScore}/10
-              </span>
+            <div className="flex justify-center">
+              <RiskGauge score={report.riskScore} level={report.riskLevel} color={riskColor} />
             </div>
             <p className="text-sm text-[#7a7f6a] leading-relaxed">{report.summary}</p>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#2e3329] mt-auto">
@@ -356,6 +481,7 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
         {/* ── Slide 1: Regulations ── */}
         {slide === 1 && (
           <div className="flex flex-col gap-3 flex-1">
+            <PriorityBars regulations={report.regulations} />
             {report.regulations?.map((reg) => {
               const p = PRIORITY_STYLES[reg.priority] ?? PRIORITY_STYLES.na;
               return (
@@ -442,6 +568,8 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
                 </div>
               ))}
             </div>
+
+            <DonutChart regulations={report.regulations} />
 
             <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3 mt-auto">
               <p className="text-xs text-[#7a7f6a]">Get the full dashboard — tracks all of this as regulations change.</p>
