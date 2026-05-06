@@ -27,14 +27,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 
-  // Send confirmation email — fire and forget, never blocks the 201
+  // Send confirmation email — awaited so serverless fn doesn't terminate before it resolves
   const firstName = name?.trim().split(" ")[0] || "there";
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  resend.emails.send({
-    from:    "Regulus <hello@regulus.eu>",
-    to:      email.trim().toLowerCase(),
-    subject: "You're on the Regulus waitlist.",
-    html: `
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { data, error: emailError } = await resend.emails.send({
+      from:    "Regulus <hello@regulus.eu>",
+      to:      email.trim().toLowerCase(),
+      subject: "You're on the Regulus waitlist.",
+      html: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -104,10 +105,16 @@ export async function POST(req: NextRequest) {
   </table>
 </body>
 </html>
-    `.trim(),
-  }).catch((err) => {
-    console.error("[resend] failed to send confirmation email:", err);
-  });
+      `.trim(),
+    });
+    if (emailError) {
+      console.error("[resend] error:", JSON.stringify(emailError));
+    } else {
+      console.log("[resend] sent:", data?.id);
+    }
+  } catch (err) {
+    console.error("[resend] exception:", err);
+  }
 
   return NextResponse.json({ success: true }, { status: 201 });
 }
