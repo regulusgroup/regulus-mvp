@@ -2,8 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: NextRequest) {
   const { name, email, role, company } = await req.json();
 
@@ -31,6 +29,7 @@ export async function POST(req: NextRequest) {
 
   // Send confirmation email — fire and forget, never blocks the 201
   const firstName = name?.trim().split(" ")[0] || "there";
+  const resend = new Resend(process.env.RESEND_API_KEY);
   resend.emails.send({
     from:    "Regulus <hello@regulus.eu>",
     to:      email.trim().toLowerCase(),
