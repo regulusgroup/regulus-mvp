@@ -18,6 +18,14 @@ const STATUS_LABEL: Record<string, string> = {
   done:        "Done",
 };
 
+// Ghost regulations shown before the user runs their first scan
+const GHOST_REGULATIONS = [
+  { name: "GDPR",     full: "General Data Protection Regulation" },
+  { name: "EU AI Act", full: "Artificial Intelligence Act" },
+  { name: "NIS2",     full: "Network and Information Security Directive 2" },
+  { name: "DORA",     full: "Digital Operational Resilience Act" },
+];
+
 interface RegulationTask {
   id: string;
   regulation_name: string;
@@ -49,7 +57,6 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Get latest scan + open tasks
   const [{ data: scans }, { data: tasks }] = await Promise.all([
     supabase
       .from("scans")
@@ -66,6 +73,7 @@ export default async function DashboardPage() {
 
   const latestScan: Scan | null = scans?.[0] ?? null;
   const allTasks: RegulationTask[] = tasks ?? [];
+  const hasData = !!latestScan;
 
   const stats = {
     total:       allTasks.length,
@@ -105,81 +113,163 @@ export default async function DashboardPage() {
           </h1>
         </div>
 
-        {!latestScan ? (
-          /* Empty state */
-          <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-10 flex flex-col items-center gap-5 text-center">
-            <h2 className="text-xl text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
-              Run your first compliance scan.
-            </h2>
-            <p className="text-sm text-[#7a7f6a] max-w-md">
-              Once you scan, your obligations will live here — tracked, prioritised, and ready to act on.
-            </p>
+        {/* Onboarding banner — only when no scan exists */}
+        {!hasData && (
+          <div className="rounded-xl border border-[#3f4e40]/60 bg-[#222720] p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Get started</p>
+              <h2 className="text-lg text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+                Run your first compliance scan.
+              </h2>
+              <p className="text-sm text-[#7a7f6a] leading-relaxed">
+                Once you scan, your obligations appear here — tracked, prioritised, ready to act on.
+              </p>
+            </div>
             <Link
               href="/scan"
-              className="h-11 px-8 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
+              className="h-11 px-7 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center shrink-0"
             >
-              Start your compliance scan →
+              Start scan →
             </Link>
           </div>
-        ) : (
-          <>
-            {/* Stats row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#2e3329] rounded-xl overflow-hidden">
-              <StatCard label="Risk score" value={`${latestScan.report.riskScore ?? "—"}/10`} sub={latestScan.report.riskLevel} />
-              <StatCard label="Regulations" value={String(stats.total)} sub="apply" />
-              <StatCard label="Progress" value={`${progressPct}%`} sub={`${stats.done} of ${stats.total}`} />
-              <StatCard label="Est. cost" value={latestScan.report.costRange ?? "—"} sub={latestScan.report.timelineToLaunch} />
-            </div>
-
-            {/* Tracker */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
-                  Action tracker
-                </h2>
-                <Link href="/scan" className="text-xs text-[#7a7f6a] hover:text-[#b5b99f] underline underline-offset-4">
-                  Re-scan
-                </Link>
-              </div>
-
-              {allTasks.length === 0 ? (
-                <p className="text-sm text-[#4a4f3e]">No tasks yet — your scan didn&apos;t flag any applicable regulations.</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {allTasks.map((t) => {
-                    const p = PRIORITY_STYLES[t.priority ?? "na"] ?? PRIORITY_STYLES.na;
-                    return (
-                      <div
-                        key={t.id}
-                        className="rounded-lg border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-3"
-                      >
-                        <div className="flex items-center justify-between gap-3 flex-wrap">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ background: "#3f4e40", color: "#b5b99f" }}>
-                              {t.regulation_name}
-                            </span>
-                            <span className="text-[11px] text-[#7a7f6a]">{t.regulation_full}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] px-2 py-0.5 rounded-full border" style={{ borderColor: p.color + "50", color: p.color, background: p.bg }}>
-                              {p.label}
-                            </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#2e3329] text-[#7a7f6a]">
-                              {STATUS_LABEL[t.status] ?? t.status}
-                            </span>
-                          </div>
-                        </div>
-                        {t.action && (
-                          <p className="text-xs text-[#b5b99f] leading-relaxed">{t.action}</p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </>
         )}
+
+        {/* Stats row — always rendered */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#2e3329] rounded-xl overflow-hidden">
+          <StatCard
+            label="Risk score"
+            value={hasData ? `${latestScan?.report.riskScore ?? "—"}/10` : "—"}
+            sub={hasData ? latestScan?.report.riskLevel : "No scan yet"}
+            empty={!hasData}
+          />
+          <StatCard
+            label="Regulations"
+            value={hasData ? String(stats.total) : "—"}
+            sub={hasData ? "apply" : "to be mapped"}
+            empty={!hasData}
+          />
+          <StatCard
+            label="Progress"
+            value={hasData ? `${progressPct}%` : "0%"}
+            sub={hasData ? `${stats.done} of ${stats.total}` : "no tasks yet"}
+            empty={!hasData}
+          />
+          <StatCard
+            label="Est. cost"
+            value={hasData ? (latestScan?.report.costRange ?? "—") : "—"}
+            sub={hasData ? latestScan?.report.timelineToLaunch : "to be estimated"}
+            empty={!hasData}
+          />
+        </div>
+
+        {/* Progress bar — always rendered */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Overall progress</p>
+            <p className="text-[11px] text-[#7a7f6a]">{progressPct}%</p>
+          </div>
+          <div className="h-1.5 rounded-full bg-[#2e3329] overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all"
+              style={{ width: `${progressPct}%`, background: "#3f4e40" }}
+            />
+          </div>
+        </div>
+
+        {/* Action tracker — always rendered */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>
+              Action tracker
+            </h2>
+            <Link href="/scan" className="text-xs text-[#7a7f6a] hover:text-[#b5b99f] underline underline-offset-4">
+              {hasData ? "Re-scan" : "Run first scan"}
+            </Link>
+          </div>
+
+          {hasData ? (
+            allTasks.length === 0 ? (
+              <p className="text-sm text-[#4a4f3e]">No tasks — your scan didn&apos;t flag any applicable regulations.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {allTasks.map((t) => {
+                  const p = PRIORITY_STYLES[t.priority ?? "na"] ?? PRIORITY_STYLES.na;
+                  return (
+                    <div
+                      key={t.id}
+                      className="rounded-lg border border-[#2e3329] bg-[#222720] p-4 flex flex-col gap-3"
+                    >
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ background: "#3f4e40", color: "#b5b99f" }}>
+                            {t.regulation_name}
+                          </span>
+                          <span className="text-[11px] text-[#7a7f6a]">{t.regulation_full}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full border" style={{ borderColor: p.color + "50", color: p.color, background: p.bg }}>
+                            {p.label}
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#2e3329] text-[#7a7f6a]">
+                            {STATUS_LABEL[t.status] ?? t.status}
+                          </span>
+                        </div>
+                      </div>
+                      {t.action && (
+                        <p className="text-xs text-[#b5b99f] leading-relaxed">{t.action}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )
+          ) : (
+            // Ghost cards before first scan
+            <div className="flex flex-col gap-2 relative">
+              {GHOST_REGULATIONS.map((r) => (
+                <div
+                  key={r.name}
+                  className="rounded-lg border border-[#2e3329] bg-[#222720]/40 p-4 flex items-center justify-between gap-3"
+                  style={{ opacity: 0.4 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ background: "#3f4e40", color: "#b5b99f" }}>
+                      {r.name}
+                    </span>
+                    <span className="text-[11px] text-[#7a7f6a]">{r.full}</span>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#2e3329] text-[#4a4f3e]">
+                    Pending scan
+                  </span>
+                </div>
+              ))}
+              <p className="text-[11px] text-[#4a4f3e] text-center mt-2">
+                Run a scan to populate this with regulations specific to your business.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Activity / next steps — always rendered */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-5 flex flex-col gap-2">
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Latest scan</p>
+            <p className="text-sm text-[#b5b99f]">
+              {hasData
+                ? new Date(latestScan!.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+                : "No scan yet"}
+            </p>
+            <p className="text-xs text-[#7a7f6a]">
+              {hasData ? "Re-scan when your stack, geography, or product changes." : "Run your first scan to start tracking."}
+            </p>
+          </div>
+          <div className="rounded-xl border border-[#2e3329] bg-[#222720] p-5 flex flex-col gap-2">
+            <p className="text-[11px] text-[#3f4e40] uppercase tracking-widest">Regulatory alerts</p>
+            <p className="text-sm text-[#b5b99f]">Coming soon</p>
+            <p className="text-xs text-[#7a7f6a]">Get notified when a regulation that applies to you is amended.</p>
+          </div>
+        </div>
+
       </main>
 
       <footer className="px-6 md:px-12 py-6 border-t border-[#2e3329] flex items-center justify-between">
@@ -190,12 +280,24 @@ export default async function DashboardPage() {
   );
 }
 
-function StatCard({ label, value, sub }: { label: string; value: string; sub?: string | null }) {
+function StatCard({ label, value, sub, empty }: { label: string; value: string; sub?: string | null; empty?: boolean }) {
   return (
     <div className="bg-[#1a1f18] flex flex-col items-start gap-1 px-5 py-6">
       <span className="text-[10px] text-[#3f4e40] uppercase tracking-widest">{label}</span>
-      <span className="text-2xl md:text-3xl text-[#b5b99f]" style={{ fontFamily: "MomoTrust, serif" }}>{value}</span>
-      {sub && <span className="text-[11px] text-[#7a7f6a]">{sub}</span>}
+      <span
+        className="text-2xl md:text-3xl"
+        style={{
+          fontFamily: "MomoTrust, serif",
+          color: empty ? "#3f4e40" : "#b5b99f",
+        }}
+      >
+        {value}
+      </span>
+      {sub && (
+        <span className="text-[11px]" style={{ color: empty ? "#3f4e40" : "#7a7f6a" }}>
+          {sub}
+        </span>
+      )}
     </div>
   );
 }
