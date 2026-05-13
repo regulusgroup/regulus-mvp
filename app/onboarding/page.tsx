@@ -32,6 +32,8 @@ export default function OnboardingPage() {
   const [result, setResult] = useState<DiscoveryResult | null>(null);
   const [docText, setDocText] = useState("");
   const [docParsing, setDocParsing] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadError, setUploadError] = useState("");
 
   // Pre-fill website from email domain on mount
   useEffect(() => {
@@ -86,6 +88,7 @@ export default function OnboardingPage() {
   async function parseDoc(type: string) {
     if (docText.trim().length < 50) return;
     setDocParsing(true);
+    setUploadError("");
     try {
       const res = await fetch("/api/parse-document", {
         method: "POST",
@@ -93,9 +96,27 @@ export default function OnboardingPage() {
         body: JSON.stringify({ type, text: docText }),
       });
       if (res.ok) {
-        // Merge: for V1 we just clear the field and show success
+        setUploadedFiles((f) => [...f, `Pasted ${type.replace(/_/g, " ")}`]);
         setDocText("");
       }
+    } finally {
+      setDocParsing(false);
+    }
+  }
+
+  async function uploadFile(file: File, type: string) {
+    setDocParsing(true);
+    setUploadError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("type", type);
+      const res = await fetch("/api/upload-document", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setUploadedFiles((f) => [...f, file.name]);
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload failed");
     } finally {
       setDocParsing(false);
     }
@@ -191,13 +212,16 @@ export default function OnboardingPage() {
           />
         )}
 
-        {/* ── DEEPEN (paste docs) ──────────────────────────────── */}
+        {/* ── DEEPEN (upload + paste docs) ──────────────────────── */}
         {stage === "deepen" && (
           <DeepenPanel
             docText={docText}
             setDocText={setDocText}
             onParse={parseDoc}
+            onUpload={uploadFile}
             parsing={docParsing}
+            uploadedFiles={uploadedFiles}
+            uploadError={uploadError}
             onFinish={finishAndScan}
             onBack={() => setStage("review")}
           />
@@ -376,15 +400,26 @@ function ReviewPanel({
 }
 
 function DeepenPanel({
-  docText, setDocText, onParse, parsing, onFinish, onBack,
+  docText, setDocText, onParse, onUpload, parsing, uploadedFiles, uploadError, onFinish, onBack,
 }: {
   docText: string;
   setDocText: (v: string) => void;
   onParse: (type: string) => void;
+  onUpload: (file: File, type: string) => void;
   parsing: boolean;
+  uploadedFiles: string[];
+  uploadError: string;
   onFinish: () => void;
   onBack: () => void;
 }) {
+  const [dragOver, setDragOver] = useState(false);
+  const [pendingType, setPendingType] = useState("privacy_policy");
+
+  function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    Array.from(files).forEach((f) => onUpload(f, pendingType));
+  }
+
   return (
     <>
       <div className="flex flex-col gap-3">
@@ -393,36 +428,99 @@ function DeepenPanel({
           Want a deeper read?
         </h1>
         <p className="text-sm text-[#7a7f6a] leading-relaxed">
-          Drop in your privacy policy, pitch text, or any compliance doc — we&apos;ll extract sub-processors,
+          Drop in your privacy policy, pitch deck, or DPA — we&apos;ll extract sub-processors,
           retention periods, lawful basis, and more. Or skip and go straight to your dashboard.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <label className="text-[11px] text-[#7a7f6a] uppercase tracking-widest">Paste document text</label>
-        <textarea
-          rows={8}
-          value={docText}
-          onChange={(e) => setDocText(e.target.value)}
-          placeholder="Paste your privacy policy, pitch deck text, terms of service…"
-          className="w-full px-4 py-3 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors resize-none leading-relaxed"
-        />
+      {/* Doc type selector */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[11px] text-[#7a7f6a] uppercase tracking-widest">Document type</label>
         <div className="flex flex-wrap gap-2">
           {[
-            { id: "privacy_policy", label: "It's a privacy policy" },
+            { id: "privacy_policy", label: "Privacy policy" },
             { id: "dpa",            label: "DPA / contract" },
             { id: "pitch",          label: "Pitch / description" },
+            { id: "other",          label: "Other" },
           ].map(({ id, label }) => (
             <button
               key={id}
-              onClick={() => onParse(id)}
-              disabled={docText.trim().length < 50 || parsing}
-              className="h-9 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] disabled:opacity-30 cursor-pointer transition-colors"
+              onClick={() => setPendingType(id)}
+              className="h-9 px-4 rounded-lg border text-xs cursor-pointer transition-colors"
+              style={{
+                borderColor: pendingType === id ? "#3f4e40" : "#2e3329",
+                background:  pendingType === id ? "#222720" : "transparent",
+                color:       pendingType === id ? "#b5b99f" : "#7a7f6a",
+              }}
             >
-              {parsing ? "Parsing…" : `Parse as: ${label}`}
+              {pendingType === id ? "✓ " : ""}{label}
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Dropzone */}
+      <label
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
+        className="flex flex-col items-center justify-center gap-3 px-6 py-10 rounded-xl border-2 border-dashed cursor-pointer transition-colors"
+        style={{
+          borderColor: dragOver ? "#3f4e40" : "#2e3329",
+          background:  dragOver ? "#222720" : "transparent",
+        }}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: "#7a7f6a" }}>
+          <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <div className="flex flex-col items-center gap-1 text-center">
+          <span className="text-sm text-[#b5b99f]">
+            {parsing ? "Reading file…" : "Drop a file or click to upload"}
+          </span>
+          <span className="text-[11px] text-[#4a4f3e]">PDF, DOCX, PPTX, MD, TXT — up to 10MB</span>
+        </div>
+        <input
+          type="file"
+          className="hidden"
+          accept=".pdf,.docx,.pptx,.xlsx,.odt,.odp,.ods,.md,.markdown,.txt,.html"
+          onChange={(e) => handleFiles(e.target.files)}
+          disabled={parsing}
+        />
+      </label>
+
+      {uploadError && <p className="text-xs text-red-400 text-center">{uploadError}</p>}
+
+      {uploadedFiles.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] text-[#7a7f6a] uppercase tracking-widest">Parsed</label>
+          {uploadedFiles.map((name, i) => (
+            <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#3f4e40]/40 bg-[#222720]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M5 13l4 4L19 7" stroke="#b5b99f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-xs text-[#b5b99f]">{name}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Or paste */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[11px] text-[#7a7f6a] uppercase tracking-widest">Or paste text</label>
+        <textarea
+          rows={6}
+          value={docText}
+          onChange={(e) => setDocText(e.target.value)}
+          placeholder="Paste document content here…"
+          className="w-full px-4 py-3 rounded-lg border border-[#2e3329] bg-[#222720] text-[#b5b99f] placeholder:text-[#4a4f3e] text-sm outline-none focus:border-[#3f4e40] transition-colors resize-none leading-relaxed"
+        />
+        <button
+          onClick={() => onParse(pendingType)}
+          disabled={docText.trim().length < 50 || parsing}
+          className="h-9 px-4 rounded-lg border border-[#2e3329] text-xs text-[#7a7f6a] hover:border-[#3f4e40] hover:text-[#b5b99f] disabled:opacity-30 cursor-pointer transition-colors w-fit"
+        >
+          {parsing ? "Parsing…" : "Parse pasted text"}
+        </button>
       </div>
 
       <div className="flex gap-3">
