@@ -8,7 +8,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://regulus.eu"),
+  metadataBase: new URL("https://regulusgroup.eu"),
   title: "Regulus — EU Compliance for AI Companies",
   description:
     "If you use AI and hold EU client data, you have overlapping GDPR, EU AI Act, and NIS2 obligations. Regulus maps them, tracks them, and tells you exactly what to do.",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
       "GDPR. EU AI Act. NIS2. DORA. AML. One AI dashboard maps every regulation that applies to your business — tracked, simplified, and acted on.",
     siteName: "Regulus",
     type: "website",
-    url: "https://regulus.eu",
+    url: "https://regulusgroup.eu",
     images: [
       {
         url: "/og-image.jpg",
