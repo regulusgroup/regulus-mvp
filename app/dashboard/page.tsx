@@ -57,6 +57,17 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  // First-time users go through onboarding (auto-discovery)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("discovered_at")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile?.discovered_at) {
+    redirect("/onboarding");
+  }
+
   const [{ data: scans }, { data: tasks }] = await Promise.all([
     supabase
       .from("scans")
