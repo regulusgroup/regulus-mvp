@@ -223,6 +223,7 @@ interface Report {
   thirtyDayPlan: string[];
   costRange: string;
   timelineToLaunch: string;
+  saved?: boolean;  // true when the scan was persisted for a logged-in user
 }
 
 // ─── UI helpers ───────────────────────────────────────────────────────────────
@@ -572,13 +573,35 @@ function ReportView({ report, onEdit }: { report: Report; onEdit: () => void }) 
             <DonutChart regulations={report.regulations} />
 
             <div className="border-t border-[#2e3329] pt-5 flex flex-col gap-3 mt-auto">
-              <p className="text-xs text-[#7a7f6a]">Get the full dashboard — tracks all of this as regulations change.</p>
-              <Link
-                href="/waitlist"
-                className="h-10 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
-              >
-                Join the waitlist →
-              </Link>
+              {report.saved ? (
+                <>
+                  <p className="text-xs text-[#7a7f6a]">Saved to your dashboard. Track and update status as you go.</p>
+                  <Link
+                    href="/dashboard"
+                    className="h-10 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
+                  >
+                    Open dashboard →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-[#7a7f6a]">Save this report and track progress — sign in to keep it in your dashboard.</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/login"
+                      className="h-10 rounded-lg bg-[#3f4e40] text-[#b5b99f] text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
+                    >
+                      Save my report →
+                    </Link>
+                    <Link
+                      href="/waitlist"
+                      className="h-10 rounded-lg border border-[#3f4e40]/60 text-[#b5b99f] text-sm font-medium hover:border-[#3f4e40] hover:bg-[#222720] transition-all flex items-center justify-center"
+                    >
+                      Join waitlist
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
